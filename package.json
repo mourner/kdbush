@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "A very fast static 2D index for points based on kd-tree.",
   "main": "src/kdbush.js",
-  "dependencies": {},
+  "dependencies": {
+    "tape": "^4.5.1"
+  },
   "devDependencies": {
     "eslint": "^2.7.0",
     "eslint-config-mourner": "^2.0.0"
   },
   "scripts": {
-    "test": "eslint index.js src"
+    "pretest": "eslint test.js src",
+    "test": "tape test.js"
   },
   "eslintConfig": {
     "extends": "mourner"
