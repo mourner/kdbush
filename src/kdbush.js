@@ -6,17 +6,18 @@ var within = require('./within');
 
 module.exports = kdbush;
 
-function kdbush(points, getX, getY, nodeSize, arrayType) {
-    /* eslint consistent-return: 0, new-cap: 0 */
-    if (!(this instanceof kdbush)) return new kdbush(points, getX, getY, nodeSize, arrayType);
+function kdbush(points, getX, getY, nodeSize, ArrayType) {
+    return new KDBush(points, getX, getY, nodeSize, ArrayType);
+}
 
+function KDBush(points, getX, getY, nodeSize, ArrayType) {
     getX = getX || defaultGetX;
     getY = getY || defaultGetY;
-    arrayType = arrayType || Array;
+    ArrayType = ArrayType || Array;
     this.nodeSize = nodeSize || 64;
 
-    var ids = this.ids = new arrayType(points.length);
-    var coords = this.coords = new arrayType(points.length * 2);
+    var ids = this.ids = new ArrayType(points.length);
+    var coords = this.coords = new ArrayType(points.length * 2);
 
     for (var i = 0; i < points.length; i++) {
         ids[i] = i;
@@ -27,7 +28,7 @@ function kdbush(points, getX, getY, nodeSize, arrayType) {
     sort(ids, coords, this.nodeSize, 0, ids.length - 1, 0);
 }
 
-kdbush.prototype = {
+KDBush.prototype = {
     range: function (minX, minY, maxX, maxY) {
         return range(this.ids, this.coords, minX, minY, maxX, maxY, this.nodeSize);
     },
