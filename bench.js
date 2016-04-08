@@ -10,7 +10,7 @@ for (var i = 0; i < 1000000; i++) {
 console.time('index ' + points.length + ' points');
 var index = kdbush(points,
     (p) => p.x,
-    (p) => p.y);
+    (p) => p.y, 64, Int32Array);
 console.timeEnd('index ' + points.length + ' points');
 
 console.time('10000 small bbox queries');
