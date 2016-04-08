@@ -23,6 +23,7 @@ function within(ids, coords, qx, qy, r, nodeSize) {
 
         var x = coords[2 * m];
         var y = coords[2 * m + 1];
+
         if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
 
         var nextAxis = (axis + 1) % 2;

@@ -25,6 +25,7 @@ function range(ids, coords, minX, minY, maxX, maxY, nodeSize) {
 
         x = coords[2 * m];
         y = coords[2 * m + 1];
+
         if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[m]);
 
         var nextAxis = (axis + 1) % 2;
