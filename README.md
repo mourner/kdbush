@@ -8,14 +8,9 @@ Compared to [RBush](https://github.com/mourner/rbush):
 - indexing is 5-8 times faster
 
 ```js
-// make an index
-var index = kdbush(points);
-
-// bbox search - minX, minY, maxX, maxY
-var ids1 = index.range(10, 10, 20, 20);
-
-// radius search - x, y, radius
-var ids2 = index.within(10, 10, 5);
+var index = kdbush(points);              // make an index
+var ids1 = index.range(10, 10, 20, 20);  // bbox search - minX, minY, maxX, maxY
+var ids2 = index.within(10, 10, 5);      // radius search - x, y, radius
 ```
 
 ## API
