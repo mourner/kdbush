@@ -3,11 +3,6 @@
 module.exports = sortKD;
 
 function sortKD(ids, coords, nodeSize, left, right, depth) {
-    nodeSize = nodeSize || 64;
-    left = left || 0;
-    right = right || (ids.length - 1);
-    depth = depth || 0;
-
     if (right - left <= nodeSize) return;
 
     var m = Math.floor((left + right) / 2);

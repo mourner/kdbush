@@ -5,14 +5,7 @@ module.exports = within;
 function within(ids, coords, qx, qy, r, nodeSize) {
     var stack = [0, ids.length - 1, 0];
     var result = [];
-
-    var minX = qx - r;
-    var minY = qy - r;
-    var maxX = qx + r;
-    var maxY = qy + r;
     var r2 = r * r;
-
-    nodeSize = nodeSize || 64;
 
     while (stack.length) {
         var axis = stack.pop();
@@ -23,27 +16,26 @@ function within(ids, coords, qx, qy, r, nodeSize) {
             for (var i = left; i <= right; i++) {
                 if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) result.push(ids[i]);
             }
+            continue;
+        }
 
-        } else {
-            var m = Math.floor((left + right) / 2);
+        var m = Math.floor((left + right) / 2);
 
-            var x = coords[2 * m];
-            var y = coords[2 * m + 1];
-            if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
+        var x = coords[2 * m];
+        var y = coords[2 * m + 1];
+        if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
 
-            var nextAxis = (axis + 1) % 2;
-            var val = axis === 0 ? x : y;
+        var nextAxis = (axis + 1) % 2;
 
-            if ((axis === 0 ? minX : minY) <= val) {
-                stack.push(left);
-                stack.push(m);
-                stack.push(nextAxis);
-            }
-            if ((axis === 0 ? maxX : maxY) >= val) {
-                stack.push(m);
-                stack.push(right);
-                stack.push(nextAxis);
-            }
+        if (axis === 0 ? qx - r <= x : qy - r <= y) {
+            stack.push(left);
+            stack.push(m - 1);
+            stack.push(nextAxis);
+        }
+        if (axis === 0 ? qx + r >= x : qy + r >= y) {
+            stack.push(m + 1);
+            stack.push(right);
+            stack.push(nextAxis);
         }
     }
 
