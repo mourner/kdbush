@@ -1,25 +1,50 @@
 ## kdbush
 
 A very fast static spatial index for 2D points based on a flat KD-tree.
+Compared to [RBush](https://github.com/mourner/rbush):
+
+- points only — no rectangles
+- static — you can't add/remove items
+- indexing is 5-8 times faster
 
 ```js
-var ids = new Int32Array(points.length);
-var coords = new Int32Array(points.length * 2);
-
-for (var i = 0; i < points.length; i++) {
-    ids[i] = i;
-    coords[2 * i] = points[i].x;
-    coords[2 * i + 1] = points[i].y;
-}
-
-// rearrange items in ids and coords for KD-search
-kdbush(ids, coords);
+// make an index
+var index = kdbush(points);
 
 // bbox search - minX, minY, maxX, maxY
-var resultIds = kdbush.range(ids, coords, 10, 10, 20, 20);
+var ids1 = index.range(10, 10, 20, 20);
 
 // radius search - x, y, radius
-var resultIds2 = kdbush.within(ids, coords, 10, 10, 5);
+var ids2 = index.within(10, 10, 5);
 ```
 
-If you need to index rectangles or ability to add and remove items dynamically, check out [RBush](https://github.com/mourner/rbush).
+## API
+
+#### kdbush(points[, getX, getY, nodeSize, arrayType])
+
+Creates an index from the given points.
+
+- `points`: Input array of points.
+- `getX`, `getY`: Functions to get `x` and `y` from an input point. By default, it assumes `[x, y]` format.
+- `nodeSize`: Size of the KD-tree node, `64` by default. Higher means faster indexing but slower search, and vise versa.
+- `arrayType`: Array type to use for storing indices and coordinate values. `Array` by default, but if your coordinates are integer values, `Int32Array` makes things a bit faster.
+
+```js
+var index = kdbush(points, (p) => p.x, (p) => p.y, 64, Int32Array);
+```
+
+#### range(minX, minY, maxX, maxY)
+
+Finds all items within the given bounding box and returns an array of indices that refer to the items in the original `points` input array.
+
+```js
+var results = index.range(10, 10, 20, 20).map((id) => points[id]);
+```
+
+#### within(x, y, radius)
+
+Finds all items within a given radius from the query point and returns an array of indices.
+
+```js
+var results = index.within(10, 10, 5).map((id) => points[id]);
+```

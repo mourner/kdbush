@@ -1,49 +1,32 @@
 'use strict';
 
-var kdbush = require('./');
+var kdbush = require('./src/kdbush');
 
 var points = [];
 for (var i = 0; i < 1000000; i++) {
     points.push(randomPoint(1000));
 }
 
-console.log(points.length);
+console.time('index ' + points.length + ' points');
+var index = kdbush(points,
+    (p) => p.x,
+    (p) => p.y);
+console.timeEnd('index ' + points.length + ' points');
 
-
-console.time('kdbush');
-
-var ids = new Int32Array(points.length);
-var coords = new Int32Array(points.length * 2);
-
-for (var i = 0; i < points.length; i++) {
-    ids[i] = i;
-    coords[2 * i] = points[i].x;
-    coords[2 * i + 1] = points[i].y;
-}
-
-kdbush(ids, coords);
-
-console.timeEnd('kdbush');
-
-
-console.time('range');
-
+console.time('10000 small bbox queries');
 for (var i = 0; i < 10000; i++) {
     var p = randomPoint(1000);
-    kdbush.range(ids, coords, p.x - 1, p.y - 1, p.x + 1, p.y + 1);
+    index.range(p.x - 1, p.y - 1, p.x + 1, p.y + 1);
 }
+console.timeEnd('10000 small bbox queries');
 
-console.timeEnd('range');
 
-
-console.time('within');
-
+console.time('10000 small radius queries');
 for (var i = 0; i < 10000; i++) {
     var p = randomPoint(1000);
-    kdbush.within(ids, coords, p.x, p.y, 1);
+    index.within(p.x, p.y, 1);
 }
-
-console.timeEnd('within');
+console.timeEnd('10000 small radius queries');
 
 
 function randomPoint(max) {
