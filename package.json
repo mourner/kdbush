@@ -1,0 +1,28 @@
+{
+  "name": "kdbush",
+  "version": "1.0.0",
+  "description": "A very fast static 2D index for points based on kd-tree.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^2.7.0",
+    "eslint-config-mourner": "^2.0.0"
+  },
+  "scripts": {
+    "test": "eslint index.js src"
+  },
+  "eslintConfig": {
+    "extends": "mourner"
+  },
+  "keywords": [
+    "index",
+    "points",
+    "kd-tree",
+    "data structures",
+    "algorithms",
+    "spatial",
+    "geometry"
+  ],
+  "author": "Vladimir Agafonkin",
+  "license": "ISC"
+}
