@@ -6,6 +6,10 @@
   "dependencies": {
     "tape": "^4.5.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mourner/kdbush.git"
+  },
   "devDependencies": {
     "eslint": "^2.7.0",
     "eslint-config-mourner": "^2.0.0"
