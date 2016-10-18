@@ -8,9 +8,9 @@
     "url": "git://github.com/mourner/kdbush.git"
   },
   "devDependencies": {
-    "eslint": "^2.7.0",
-    "eslint-config-mourner": "^2.0.0",
-    "tape": "^4.5.1"
+    "eslint": "^3.8.1",
+    "eslint-config-mourner": "^2.0.1",
+    "tape": "^4.6.2"
   },
   "scripts": {
     "pretest": "eslint test.js src",
