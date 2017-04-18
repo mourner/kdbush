@@ -93,3 +93,74 @@ function sqDist(a, b) {
     var dy = a[1] - b[1];
     return dx * dx + dy * dy;
 }
+
+function arrayToObjects(array) {
+    var obj = {};
+    for (var i = 0; i < array.length; i++) {
+        obj[i] = array[i];
+    }
+    return obj;
+}
+
+test('creates an index from objects', function (t) {
+    var obj = arrayToObjects(points);
+    var index = kdbush.kdbushO(obj, null, null, 10);
+
+    t.same(index.ids, ids, 'ids are kd-sorted');
+    t.same(index.coords, coords, 'coords are kd-sorted');
+
+    t.end();
+});
+
+test('range search in objects', function (t) {
+    var obj = arrayToObjects(points);
+    var index = kdbush.kdbushO(obj, null, null, 10);
+
+    var result = index.range(20, 30, 50, 70);
+
+    t.same(result, [60,20,45,3,17,71,44,19,18,15,69,90,62,96,47,8,77,72], 'returns ids');
+
+    for (var i = 0; i < result.length; i++) {
+        var p = points[result[i]];
+        if (p[0] < 20 || p[0] > 50 || p[1] < 30 || p[1] > 70)
+            t.fail('result point in range');
+    }
+    t.pass('result points in range');
+
+    for (i = 0; i < ids.length; i++) {
+        p = points[ids[i]];
+        if (result.indexOf(ids[i]) < 0 && p[0] >= 20 && p[0] <= 50 && p[1] >= 30 && p[1] <= 70)
+            t.fail('outside point not in range');
+    }
+    t.pass('outside points not in range');
+
+    t.end();
+});
+
+test('radius search in objects', function (t) {
+    var obj = arrayToObjects(points);
+    var index = kdbush.kdbushO(obj, null, null, 10);
+
+    var qp = [50, 50];
+    var r = 20;
+    var r2 = 20 * 20;
+
+    var result = index.within(qp[0], qp[1], r);
+
+    t.same(result, [60,6,25,92,42,20,45,3,71,44,18,96], 'returns ids');
+
+    for (var i = 0; i < result.length; i++) {
+        var p = points[result[i]];
+        if (sqDist(p, qp) > r2) t.fail('result point in range');
+    }
+    t.pass('result points in range');
+
+    for (i = 0; i < ids.length; i++) {
+        p = points[ids[i]];
+        if (result.indexOf(ids[i]) < 0 && sqDist(p, qp) <= r2)
+            t.fail('outside point not in range');
+    }
+    t.pass('outside points not in range');
+
+    t.end();
+});

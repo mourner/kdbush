@@ -4,34 +4,34 @@ var sort = require('./sort');
 var range = require('./range');
 var within = require('./within');
 
-module.exports = kdbush;
-module.exports.kdbushO = require('./kdbusho');
+module.exports = kdbushO;
 
-function kdbush(points, getX, getY, nodeSize, ArrayType) {
-    return new KDBush(points, getX, getY, nodeSize, ArrayType);
+function kdbushO(points, getX, getY, nodeSize, ArrayType) {
+    return new KDBushO(points, getX, getY, nodeSize, ArrayType);
 }
 
-function KDBush(points, getX, getY, nodeSize, ArrayType) {
+function KDBushO(points, getX, getY, nodeSize, ArrayType) {
     getX = getX || defaultGetX;
     getY = getY || defaultGetY;
     ArrayType = ArrayType || Array;
 
     this.nodeSize = nodeSize || 64;
-    this.points = points;
+    var keys = Object.keys(points);
 
-    this.ids = new ArrayType(points.length);
-    this.coords = new ArrayType(points.length * 2);
+    this.ids = new ArrayType(keys.length);
+    this.coords = new ArrayType(keys.length * 2);
 
-    for (var i = 0; i < points.length; i++) {
+    for (var i = 0; i < keys.length; i++) {
         this.ids[i] = i;
-        this.coords[2 * i] = getX(points[i]);
-        this.coords[2 * i + 1] = getY(points[i]);
+        var key = keys[i];
+        this.coords[2 * i] = getX(points[key]);
+        this.coords[2 * i + 1] = getY(points[key]);
     }
 
     sort(this.ids, this.coords, this.nodeSize, 0, this.ids.length - 1, 0);
 }
 
-KDBush.prototype = {
+KDBushO.prototype = {
     range: function (minX, minY, maxX, maxY) {
         return range(this.ids, this.coords, minX, minY, maxX, maxY, this.nodeSize);
     },
