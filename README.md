@@ -28,6 +28,20 @@ Creates an index from the given points.
 var index = kdbush(points, (p) => p.x, (p) => p.y, 64, Int32Array);
 ```
 
+#### kdbushO(points[, getX, getY, nodeSize, arrayType])
+
+Creates an index from objects.
+
+- `points`: Input objects.
+- `getX`, `getY`: Functions to get `x` and `y` from an input point. By default, it assumes `[x, y]` format.
+- `nodeSize`: Size of the KD-tree node, `64` by default. Higher means faster indexing but slower search, and vise versa.
+- `arrayType`: Array type to use for storing indices and coordinate values. `Array` by default, but if your coordinates are integer values, `Int32Array` makes things a bit faster.
+
+```js
+var index = kdbush.kdbushO(points, (p) => p.x, (p) => p.y, 64, Int32Array);
+```
+
+
 #### range(minX, minY, maxX, maxY)
 
 Finds all items within the given bounding box and returns an array of indices that refer to the items in the original `points` input array.
