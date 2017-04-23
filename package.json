@@ -3,6 +3,7 @@
   "version": "1.0.1",
   "description": "A very fast static 2D index for points based on kd-tree.",
   "main": "src/kdbush.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/mourner/kdbush.git"
@@ -10,11 +11,13 @@
   "devDependencies": {
     "eslint": "^3.8.1",
     "eslint-config-mourner": "^2.0.1",
-    "tape": "^4.6.2"
+    "tape": "^4.6.2",
+    "typescript": "^2.2.2"
   },
   "scripts": {
     "pretest": "eslint test.js src",
-    "test": "tape test.js"
+    "test": "tape test.js",
+    "types": "tsc test.types.ts"
   },
   "eslintConfig": {
     "extends": "mourner"
