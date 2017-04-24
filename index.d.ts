@@ -1,4 +1,5 @@
 type Points = number[][]
+type Get<T> = (p: T) => void
 
 declare class KDBush<T> {
   ids: number[]
@@ -11,7 +12,7 @@ declare class KDBush<T> {
 
 interface KDBushStatic {
   (points: Points): KDBush<Points>
-  <T>(points: T[], getX: (p: T) => void, getY: (p: T) => void, nodeSize?: number, ArrayType?: any): KDBush<T>
+  <T>(points: T[], getX: Get<T>, getY: Get<T>, nodeSize?: number, ArrayType?: any): KDBush<T>
 }
 
 declare const kdbush: KDBushStatic
