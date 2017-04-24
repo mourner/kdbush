@@ -15,7 +15,7 @@
     "typescript": "^2.2.2"
   },
   "scripts": {
-    "pretest": "eslint test.js src",
+    "pretest": "eslint test.js src && tsc types.ts",
     "test": "tape test.js"
   },
   "eslintConfig": {
