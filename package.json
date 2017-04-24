@@ -16,8 +16,7 @@
   },
   "scripts": {
     "pretest": "eslint test.js src",
-    "test": "tape test.js",
-    "types": "tsc test.types.ts"
+    "test": "tape test.js"
   },
   "eslintConfig": {
     "extends": "mourner"
