@@ -5,6 +5,7 @@ var range = require('./range');
 var within = require('./within');
 
 module.exports = kdbush;
+module.exports.default = kdbush;
 
 function kdbush(points, getX, getY, nodeSize, ArrayType) {
     return new KDBush(points, getX, getY, nodeSize, ArrayType);
