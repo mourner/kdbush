@@ -1,8 +1,5 @@
-'use strict';
 
-module.exports = within;
-
-function within(ids, coords, qx, qy, r, nodeSize) {
+export default function within(ids, coords, qx, qy, r, nodeSize) {
     var stack = [0, ids.length - 1, 0];
     var result = [];
     var r2 = r * r;

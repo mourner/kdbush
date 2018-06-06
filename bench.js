@@ -1,7 +1,6 @@
-'use strict';
 
-var kdbush = require('./src/kdbush');
-var v8 = require('v8');
+import kdbush from './';
+import v8 from 'v8';
 
 var randomPoint = (max) => { return {x: randomInt(max), y: randomInt(max)}; };
 var randomInt = (max) => Math.floor(Math.random() * max);

@@ -1,8 +1,5 @@
-'use strict';
 
-module.exports = range;
-
-function range(ids, coords, minX, minY, maxX, maxY, nodeSize) {
+export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize) {
     var stack = [0, ids.length - 1, 0];
     var result = [];
     var x, y;

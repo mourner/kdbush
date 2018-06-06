@@ -1,8 +1,5 @@
-'use strict';
 
-module.exports = sortKD;
-
-function sortKD(ids, coords, nodeSize, left, right, depth) {
+export default function sortKD(ids, coords, nodeSize, left, right, depth) {
     if (right - left <= nodeSize) return;
 
     var m = Math.floor((left + right) / 2);

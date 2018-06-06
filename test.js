@@ -1,7 +1,6 @@
-'use strict';
 
-var test = require('tape').test;
-var kdbush = require('./');
+import test from 'tape';
+import kdbush from './';
 
 /* eslint comma-spacing: 0 */
 

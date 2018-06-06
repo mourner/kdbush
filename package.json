@@ -2,22 +2,33 @@
   "name": "kdbush",
   "version": "1.0.1",
   "description": "A very fast static 2D index for points based on kd-tree.",
-  "main": "src/kdbush.js",
+  "module": "src/index.js",
+  "main": "kdbush.js",
+  "jsdelivr": "dist/supercluster.min.js",
+  "unpkg": "dist/supercluster.min.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mourner/kdbush.git"
   },
   "devDependencies": {
-    "eslint": "^3.8.1",
+    "eslint": "^4.19.1",
     "eslint-config-mourner": "^2.0.1",
+    "esm": "^3.0.48",
+    "rollup": "^0.60.0",
+    "rollup-plugin-uglify": "^4.0.0",
     "tape": "^4.6.2"
   },
   "scripts": {
     "pretest": "eslint test.js src",
-    "test": "tape test.js"
+    "test": "tape -r esm test.js",
+    "bench": "node -r esm bench.js",
+    "build": "rollup -c"
   },
   "eslintConfig": {
-    "extends": "mourner"
+    "extends": "mourner",
+    "parserOptions": {
+      "sourceType": "module"
+    }
   },
   "keywords": [
     "index",
@@ -27,6 +38,11 @@
     "algorithms",
     "spatial",
     "geometry"
+  ],
+  "files": [
+    "kdbush.js",
+    "kdbush.min.js",
+    "src"
   ],
   "author": "Vladimir Agafonkin",
   "license": "ISC"

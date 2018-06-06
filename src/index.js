@@ -1,13 +1,9 @@
-'use strict';
 
-var sort = require('./sort');
-var range = require('./range');
-var within = require('./within');
+import sort from './sort';
+import range from './range';
+import within from './within';
 
-module.exports = kdbush;
-module.exports.default = kdbush;
-
-function kdbush(points, getX, getY, nodeSize, ArrayType) {
+export default function kdbush(points, getX, getY, nodeSize, ArrayType) {
     return new KDBush(points, getX, getY, nodeSize, ArrayType);
 }
 
