@@ -1,5 +1,5 @@
 
-import kdbush from './';
+import kdbush from './src/index.js';
 import v8 from 'v8';
 
 var randomPoint = (max) => { return {x: randomInt(max), y: randomInt(max)}; };
