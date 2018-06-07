@@ -13,6 +13,24 @@ var ids1 = index.range(10, 10, 20, 20);  // bbox search - minX, minY, maxX, maxY
 var ids2 = index.within(10, 10, 5);      // radius search - x, y, radius
 ```
 
+## Install
+
+Install using NPM (`npm install kdbush`) or Yarn (`yarn add kdbush`), then:
+
+```js
+// import as a ES module
+import kdbush from 'kdbush';
+
+// or require in Node / Browserify
+const kdbush = require('kdbush');
+```
+
+Or use a browser build directly:
+
+```html
+<script src="https://unpkg.com/kdbush@2.0.0/kdbush.min.js"></script>
+```
+
 ## API
 
 #### kdbush(points[, getX, getY, nodeSize, arrayType])
