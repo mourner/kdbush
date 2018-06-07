@@ -4,8 +4,8 @@
   "description": "A very fast static 2D index for points based on kd-tree.",
   "module": "src/index.js",
   "main": "kdbush.js",
-  "jsdelivr": "dist/supercluster.min.js",
-  "unpkg": "dist/supercluster.min.js",
+  "jsdelivr": "dist/kdbush.min.js",
+  "unpkg": "dist/kdbush.min.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/mourner/kdbush.git"
