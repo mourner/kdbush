@@ -10,7 +10,7 @@ export default function kdbush(points, getX, getY, nodeSize, ArrayType) {
 function KDBush(points, getX, getY, nodeSize, ArrayType) {
     getX = getX || defaultGetX;
     getY = getY || defaultGetY;
-    ArrayType = ArrayType || Float32Array;
+    ArrayType = ArrayType || Float64Array;
 
     this.nodeSize = nodeSize || 64;
     this.points = points;
