@@ -10,12 +10,14 @@ export default function kdbush(points, getX, getY, nodeSize, ArrayType) {
 function KDBush(points, getX, getY, nodeSize, ArrayType) {
     getX = getX || defaultGetX;
     getY = getY || defaultGetY;
-    ArrayType = ArrayType || Array;
+    ArrayType = ArrayType || Float64Array;
 
     this.nodeSize = nodeSize || 64;
     this.points = points;
 
-    this.ids = new ArrayType(points.length);
+    const IndexArrayType = points.length < 65536 ? Uint16Array : Uint32Array;
+
+    this.ids = new IndexArrayType(points.length);
     this.coords = new ArrayType(points.length * 2);
 
     for (var i = 0; i < points.length; i++) {
