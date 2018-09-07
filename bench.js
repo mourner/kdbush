@@ -12,7 +12,7 @@ for (let i = 0; i < 1000000; i++) points.push(randomPoint(1000));
 console.log(`memory: ${  heapSize()}`);
 
 console.time(`index ${  points.length  } points`);
-const index = new KDBush(points, p => p.x, p => p.y, 64, Int32Array);
+const index = new KDBush(points, p => p.x, p => p.y, 64, Uint32Array);
 console.timeEnd(`index ${  points.length  } points`);
 
 console.log(`memory: ${  heapSize()}`);

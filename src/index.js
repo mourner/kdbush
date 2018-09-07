@@ -13,6 +13,7 @@ export default class KDBush {
 
         const IndexArrayType = points.length < 65536 ? Uint16Array : Uint32Array;
 
+        // store indices to the input array and coordinates in separate typed arrays
         const ids = this.ids = new IndexArrayType(points.length);
         const coords = this.coords = new ArrayType(points.length * 2);
 
@@ -22,6 +23,7 @@ export default class KDBush {
             coords[2 * i + 1] = getY(points[i]);
         }
 
+        // kd-sort both arrays for efficient search (see comments in sort.js)
         sort(ids, coords, nodeSize, 0, ids.length - 1, 0);
     }
 
