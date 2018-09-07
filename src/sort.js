@@ -2,7 +2,7 @@
 export default function sortKD(ids, coords, nodeSize, left, right, depth) {
     if (right - left <= nodeSize) return;
 
-    var m = Math.floor((left + right) / 2);
+    const m = (left + right) >> 1;
 
     select(ids, coords, m, left, right, depth % 2);
 
@@ -14,19 +14,19 @@ function select(ids, coords, k, left, right, inc) {
 
     while (right > left) {
         if (right - left > 600) {
-            var n = right - left + 1;
-            var m = k - left + 1;
-            var z = Math.log(n);
-            var s = 0.5 * Math.exp(2 * z / 3);
-            var sd = 0.5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
-            var newLeft = Math.max(left, Math.floor(k - m * s / n + sd));
-            var newRight = Math.min(right, Math.floor(k + (n - m) * s / n + sd));
+            const n = right - left + 1;
+            const m = k - left + 1;
+            const z = Math.log(n);
+            const s = 0.5 * Math.exp(2 * z / 3);
+            const sd = 0.5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
+            const newLeft = Math.max(left, Math.floor(k - m * s / n + sd));
+            const newRight = Math.min(right, Math.floor(k + (n - m) * s / n + sd));
             select(ids, coords, k, newLeft, newRight, inc);
         }
 
-        var t = coords[2 * k + inc];
-        var i = left;
-        var j = right;
+        const t = coords[2 * k + inc];
+        let i = left;
+        let j = right;
 
         swapItem(ids, coords, left, k);
         if (coords[2 * right + inc] > t) swapItem(ids, coords, left, right);
@@ -57,7 +57,7 @@ function swapItem(ids, coords, i, j) {
 }
 
 function swap(arr, i, j) {
-    var tmp = arr[i];
+    const tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
 }

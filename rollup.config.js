@@ -1,7 +1,8 @@
-import {uglify} from 'rollup-plugin-uglify';
+import {terser} from 'rollup-plugin-terser';
+import buble from 'rollup-plugin-buble';
 
 const config = (file, plugins) => ({
-    input: 'src/kdbush.js',
+    input: 'src/index.js',
     output: {
         name: 'kdbush',
         format: 'umd',
@@ -12,6 +13,6 @@ const config = (file, plugins) => ({
 });
 
 export default [
-    config('kdbush.js', []),
-    config('kdbush.min.js', [uglify()])
+    config('kdbush.js', [buble()]),
+    config('kdbush.min.js', [terser(), buble()])
 ];
