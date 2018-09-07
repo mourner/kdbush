@@ -1,6 +1,6 @@
 
 import test from 'tape';
-import kdbush from './src/index.js';
+import KDBush from './src/index.js';
 
 /* eslint comma-spacing: 0 */
 
@@ -28,7 +28,7 @@ const coords = [
     87,96,98,96,82];
 
 test('creates an index', (t) => {
-    const index = kdbush(points, undefined, undefined, 10);
+    const index = new KDBush(points, undefined, undefined, 10);
 
     t.same(index.ids, ids, 'ids are kd-sorted');
     t.same(index.coords, coords, 'coords are kd-sorted');
@@ -37,7 +37,7 @@ test('creates an index', (t) => {
 });
 
 test('range search', (t) => {
-    const index = kdbush(points, undefined, undefined, 10);
+    const index = new KDBush(points, undefined, undefined, 10);
 
     const result = index.range(20, 30, 50, 70);
 
@@ -61,7 +61,7 @@ test('range search', (t) => {
 });
 
 test('radius search', (t) => {
-    const index = kdbush(points, undefined, undefined, 10);
+    const index = new KDBush(points, undefined, undefined, 10);
 
     const qp = [50, 50];
     const r = 20;

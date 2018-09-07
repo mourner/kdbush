@@ -1,5 +1,5 @@
 
-import kdbush from './src/index.js';
+import KDBush from './src/index.js';
 import v8 from 'v8';
 
 const randomInt = max => Math.floor(Math.random() * max);
@@ -12,7 +12,7 @@ for (let i = 0; i < 1000000; i++) points.push(randomPoint(1000));
 console.log(`memory: ${  heapSize()}`);
 
 console.time(`index ${  points.length  } points`);
-const index = kdbush(points, p => p.x, p => p.y, 64, Int32Array);
+const index = new KDBush(points, p => p.x, p => p.y, 64, Int32Array);
 console.timeEnd(`index ${  points.length  } points`);
 
 console.log(`memory: ${  heapSize()}`);

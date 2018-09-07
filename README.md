@@ -1,4 +1,4 @@
-## kdbush [![Build Status](https://travis-ci.org/mourner/kdbush.svg?branch=master)](https://travis-ci.org/mourner/kdbush) [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
+## KDBush [![Build Status](https://travis-ci.org/mourner/kdbush.svg?branch=master)](https://travis-ci.org/mourner/kdbush) [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
 
 A very fast static spatial index for 2D points based on a flat KD-tree.
 Compared to [RBush](https://github.com/mourner/rbush):
@@ -8,9 +8,9 @@ Compared to [RBush](https://github.com/mourner/rbush):
 - indexing is 5-8 times faster
 
 ```js
-var index = kdbush(points);              // make an index
-var ids1 = index.range(10, 10, 20, 20);  // bbox search - minX, minY, maxX, maxY
-var ids2 = index.within(10, 10, 5);      // radius search - x, y, radius
+const index = new KDBush(points);         // make an index
+const ids1 = index.range(10, 10, 20, 20); // bbox search - minX, minY, maxX, maxY
+const ids2 = index.within(10, 10, 5);     // radius search - x, y, radius
 ```
 
 ## Install
@@ -19,10 +19,10 @@ Install using NPM (`npm install kdbush`) or Yarn (`yarn add kdbush`), then:
 
 ```js
 // import as a ES module
-import kdbush from 'kdbush';
+import KDBush from 'kdbush';
 
 // or require in Node / Browserify
-const kdbush = require('kdbush');
+const KDBush = require('kdbush');
 ```
 
 Or use a browser build directly:
@@ -33,7 +33,7 @@ Or use a browser build directly:
 
 ## API
 
-#### kdbush(points[, getX, getY, nodeSize, arrayType])
+#### new KDBush(points[, getX, getY, nodeSize, arrayType])
 
 Creates an index from the given points.
 
@@ -43,21 +43,21 @@ Creates an index from the given points.
 - `arrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes things a bit faster.
 
 ```js
-var index = kdbush(points, (p) => p.x, (p) => p.y, 64, Int32Array);
+const index = kdbush(points, p => p.x, p => p.y, 64, Int32Array);
 ```
 
-#### range(minX, minY, maxX, maxY)
+#### index.range(minX, minY, maxX, maxY)
 
 Finds all items within the given bounding box and returns an array of indices that refer to the items in the original `points` input array.
 
 ```js
-var results = index.range(10, 10, 20, 20).map((id) => points[id]);
+const results = index.range(10, 10, 20, 20).map(id => points[id]);
 ```
 
-#### within(x, y, radius)
+#### index.within(x, y, radius)
 
 Finds all items within a given radius from the query point and returns an array of indices.
 
 ```js
-var results = index.within(10, 10, 5).map((id) => points[id]);
+const results = index.within(10, 10, 5).map(id => points[id]);
 ```

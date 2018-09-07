@@ -4,7 +4,7 @@ import buble from 'rollup-plugin-buble';
 const config = (file, plugins) => ({
     input: 'src/index.js',
     output: {
-        name: 'kdbush',
+        name: 'KDBush',
         format: 'umd',
         indent: false,
         file
