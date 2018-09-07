@@ -28,7 +28,7 @@ const KDBush = require('kdbush');
 Or use a browser build directly:
 
 ```html
-<script src="https://unpkg.com/kdbush@2.0.0/kdbush.min.js"></script>
+<script src="https://unpkg.com/kdbush@3.0.0/kdbush.min.js"></script>
 ```
 
 ## API
@@ -43,7 +43,7 @@ Creates an index from the given points.
 - `arrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes things a bit faster.
 
 ```js
-const index = kdbush(points, p => p.x, p => p.y, 64, Int32Array);
+const index = new KDBush(points, p => p.x, p => p.y, 64, Int32Array);
 ```
 
 #### index.range(minX, minY, maxX, maxY)
