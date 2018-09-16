@@ -11,7 +11,9 @@ export default class KDBush {
         this.nodeSize = nodeSize;
         this.points = points;
 
+        this.ArrayType = ArrayType;
         const IndexArrayType = points.length < 65536 ? Uint16Array : Uint32Array;
+        this.IndexArrayType = IndexArrayType;
 
         // store indices to the input array and coordinates in separate typed arrays
         const ids = this.ids = new IndexArrayType(points.length);
@@ -33,5 +35,26 @@ export default class KDBush {
 
     within(x, y, r) {
         return within(this.ids, this.coords, x, y, r, this.nodeSize);
+    }
+
+    export() {
+        return {
+            nodeSize: this.nodeSize,
+            idsData: this.ids.buffer,
+            idsType: this.IndexArrayType,
+            coordsData: this.coords.buffer || this.coords,
+            coordsType: this.ArrayType
+        };
+    }
+
+    static from(exported) {
+        const {nodeSize, idsData, coordsData} = exported;
+        const IdsType = exported.idsType;
+        const CoordsType = exported.coordsType;
+
+        const instance = new KDBush([], () => {}, () => {}, nodeSize);
+        instance.ids = new IdsType(idsData);
+        instance.coords = new CoordsType(coordsData);
+        return instance;
     }
 }
