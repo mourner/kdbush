@@ -61,3 +61,31 @@ Finds all items within a given radius from the query point and returns an array 
 ```js
 const results = index.within(10, 10, 5).map(id => points[id]);
 ```
+
+#### export/import
+
+You can export an index, e.g. to store it on disk, and import it again.
+
+```js
+const index1 = new KDBush(points, p => p.x, p => p.y, 32, Int32Array);
+
+// export
+const exported = index1.export();
+fs.writeFileSync('index.json', JSON.stringify({
+    nodeSize: exported.nodeSize,
+    idsData: idsData.toString('hex'),
+    idsType: idsType.name,
+    coordsData: coordsData.toString('hex'),
+    coordsType: coordsType.name
+}));
+
+// import
+const imported = JSON.parse(fs.writeFileSync('index.json'));
+const index2 = KDBush.from({
+	nodeSize: imported.nodeSize,
+	idsData: Buffer.from(imported.idsData, 'hex'),
+	idsType: global[idsType],
+	coordsData: Buffer.from(imported.coordsData, 'hex'),
+	coordsType: global[coordsType]
+});
+```
