@@ -61,3 +61,17 @@ Finds all items within a given radius from the query point and returns an array 
 ```js
 const results = index.within(10, 10, 5).map(id => points[id]);
 ```
+
+#### index.toJSON() and KDBush.fromJSON(data[, getX, getY, arrayType])
+
+Importing and exporting as JSON allows you to serialise the sorted data, meaning you can cache the sorted data or do the work of sorting in another place (for example, sorting on the server and then using it on the client).
+
+```js
+// export data as JSON object
+const index = new KDBush(points, p => p.x, p => p.y);
+
+const json = index.toJSON();
+
+// import previously imported data
+const index = KDBush.fromJSON(json, p => p.x, p => p.y);
+```

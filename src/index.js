@@ -11,6 +11,10 @@ export default class KDBush {
         this.nodeSize = nodeSize;
         this.points = points;
 
+        if (!points.length) {
+            return this;
+        }
+
         const IndexArrayType = points.length < 65536 ? Uint16Array : Uint32Array;
 
         // store indices to the input array and coordinates in separate typed arrays
@@ -34,4 +38,27 @@ export default class KDBush {
     within(x, y, r) {
         return within(this.ids, this.coords, x, y, r, this.nodeSize);
     }
+
+    toJSON() {
+        return {
+            ids: Array.from(this.ids),
+            coords: Array.from(this.coords),
+            nodeSize: this.nodeSize
+        };
+    }
 }
+
+KDBush.fromJSON = function (data, getX, getY, ArrayType = Float64Array) {
+    if (typeof data === 'string') {
+        data = JSON.parse(data);
+    }
+
+    const index = new KDBush([], getX, getY, data.nodeSize, ArrayType);
+
+    const IndexArrayType = data.ids.length < 65536 ? Uint16Array : Uint32Array;
+
+    index.ids = IndexArrayType.from(data.ids);
+    index.coords = ArrayType.from(data.coords);
+
+    return index;
+};

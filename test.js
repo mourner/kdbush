@@ -87,6 +87,17 @@ test('radius search', (t) => {
     t.end();
 });
 
+test('json export and import', (t) => {
+    const index = new KDBush(points, undefined, undefined, 10);
+    const json = JSON.stringify(index.toJSON());
+    const index2 = KDBush.fromJSON(json);
+
+    t.same(index2.ids, ids, 'ids are kd-sorted');
+    t.same(index2.coords, coords, 'coords are kd-sorted');
+
+    t.end();
+});
+
 function sqDist(a, b) {
     const dx = a[0] - b[0];
     const dy = a[1] - b[1];
