@@ -1,32 +1,71 @@
 
 import KDBush from './src/index.js';
-import v8 from 'v8';
+import { heapSize, randomPoint3d } from './src/utils.js';
 
-const randomInt = max => Math.floor(Math.random() * max);
-const randomPoint = max => ({x: randomInt(max), y: randomInt(max)});
-const heapSize = () => `${v8.getHeapStatistics().used_heap_size / 1000  } KB`;
-
+const extent = 5e2;
 const points = [];
-for (let i = 0; i < 1000000; i++) points.push(randomPoint(1000));
+for (let i = 0; i < 1e6; i++) points.push(randomPoint3d(extent));
 
 console.log(`memory: ${  heapSize()}`);
 
 console.time(`index ${  points.length  } points`);
-const index = new KDBush(points, p => p.x, p => p.y, 64, Uint32Array);
-console.timeEnd(`index ${  points.length  } points`);
+
+const axisCount = 3;
+const config =
+    {
+        points,
+        getX: p => p.x,
+        getY: p => p.y,
+        getZ: p => p.z,
+        nodeSize: 64,
+        ArrayType: Float64Array,
+        axisCount
+    };
+
+const index = new KDBush(config);
+console.timeEnd(`index ${ points.length } points`);
 
 console.log(`memory: ${  heapSize()}`);
 
-console.time('10000 small bbox queries');
-for (let i = 0; i < 10000; i++) {
-    const p = randomPoint(1000);
-    index.range(p.x - 1, p.y - 1, p.x + 1, p.y + 1);
-}
-console.timeEnd('10000 small bbox queries');
+const queryCount = 1e5;
 
-console.time('10000 small radius queries');
-for (let i = 0; i < 10000; i++) {
-    const p = randomPoint(1000);
-    index.within(p.x, p.y, 1);
+console.time( queryCount + ' bbox queries');
+
+for (let i = 0; i < queryCount; i++) {
+
+    const rangePt = randomPoint3d(extent);
+
+    const delta = 2;
+    const ids = index.range(rangePt.x - delta, rangePt.y - delta, rangePt.z - delta, rangePt.x + delta, rangePt.y + delta, rangePt.z + delta);
+
+    // if (ids.length > 0) {
+    //
+    //     const pts = ids.map((id) => {
+    //         return index.points[ id ];
+    //     });
+    //
+    //     const guard = 707;
+    // }
 }
-console.timeEnd('10000 small radius queries');
+
+console.timeEnd(queryCount + ' bbox queries');
+
+console.time(queryCount + ' radial queries');
+
+for (let i = 0; i < queryCount; i++) {
+
+    const rangePt = randomPoint3d(extent);
+
+    const ids = index.within(rangePt.x, rangePt.y, rangePt.z, 2);
+
+    // if (ids.length > 0) {
+    //
+    //     const pts = ids.map((id) => {
+    //         return index.points[ id ];
+    //     });
+    //
+    //     const guard = 707;
+    // }
+}
+
+console.timeEnd(queryCount + ' radial queries');
