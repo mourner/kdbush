@@ -3,9 +3,6 @@ import sort from './sort';
 import range from './range';
 import within from './within';
 
-const defaultGetX = p => p[0];
-const defaultGetY = p => p[1];
-
 export default class KDBush {
     constructor({ points, getX, getY, getZ, nodeSize, ArrayType, axisCount }) {
         this.nodeSize = nodeSize;
