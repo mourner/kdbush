@@ -18,10 +18,28 @@ console.timeEnd(`index ${  points.length  } points`);
 console.log(`memory: ${  heapSize()}`);
 
 console.time('10000 small bbox queries');
+
+// for (let i = 0; i < 10000; i++) {
+//     const p = randomPoint(1000);
+//     index.range(p.x - 1, p.y - 1, p.x + 1, p.y + 1);
+// }
+
 for (let i = 0; i < 10000; i++) {
-    const p = randomPoint(1000);
-    index.range(p.x - 1, p.y - 1, p.x + 1, p.y + 1);
+
+    const rangePt = randomPoint(1000);
+
+    const ids = index.range(rangePt.x - 1, rangePt.y - 1, rangePt.x + 1, rangePt.y + 1);
+
+    if (ids.length > 0) {
+
+        const pts = ids.map((id) => {
+            return index.points[ id ];
+        });
+
+        const guard = 707;
+    }
 }
+
 console.timeEnd('10000 small bbox queries');
 
 console.time('10000 small radius queries');

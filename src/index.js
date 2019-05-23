@@ -25,6 +25,7 @@ export default class KDBush {
 
         // kd-sort both arrays for efficient search (see comments in sort.js)
         sort(ids, coords, nodeSize, 0, ids.length - 1, 0);
+
     }
 
     range(minX, minY, maxX, maxY) {
