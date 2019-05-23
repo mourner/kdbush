@@ -1,19 +1,28 @@
 
 import KDBush from './src/index.js';
-import v8 from 'v8';
-
-const randomInt = max => Math.floor(Math.random() * max);
-const randomPoint = max => ({x: randomInt(max), y: randomInt(max)});
-const heapSize = () => `${v8.getHeapStatistics().used_heap_size / 1000  } KB`;
+import { heapSize, randomPoint3d } from './src/utils.js';
 
 const points = [];
-for (let i = 0; i < 1000000; i++) points.push(randomPoint(1000));
+for (let i = 0; i < 1000000; i++) points.push(randomPoint3d(1000));
 
 console.log(`memory: ${  heapSize()}`);
 
 console.time(`index ${  points.length  } points`);
-const index = new KDBush(points, p => p.x, p => p.y, 64, Uint32Array);
-console.timeEnd(`index ${  points.length  } points`);
+
+const axisCount = 3;
+const config =
+    {
+        points,
+        getX: p => p.x,
+        getY: p => p.y,
+        getZ: p => p.z,
+        nodeSize: 64,
+        ArrayType: Float64Array,
+        axisCount
+    };
+
+const index = new KDBush(config);
+console.timeEnd(`index ${ points.length } points`);
 
 console.log(`memory: ${  heapSize()}`);
 
@@ -45,9 +54,9 @@ console.time('10000 small radius queries');
 
 for (let i = 0; i < 10000; i++) {
 
-    const rangePt = randomPoint(1000);
+    const rangePt = randomPoint3d(1000);
 
-    const ids = index.within(rangePt.x, rangePt.y, 1);
+    const ids = index.within(rangePt.x, rangePt.y, rangePt.z, 1);
 
     if (ids.length > 0) {
 
