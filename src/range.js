@@ -1,5 +1,5 @@
 
-export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize, axisCount) {
+export default function range(ids, coords, minX, minY, minZ, maxX, maxY, maxZ, nodeSize, axisCount) {
     const stack = [0, ids.length - 1, 0];
     const result = [];
 
@@ -14,9 +14,11 @@ export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize, axi
             for (let i = left; i <= right; i++) {
                 const x = coords[axisCount * i + 0];
                 const y = coords[axisCount * i + 1];
+                const z = coords[axisCount * i + 2];
                 if (
                     x >= minX && x <= maxX &&
-                    y >= minY && y <= maxY
+                    y >= minY && y <= maxY &&
+                    z >= minZ && z <= maxZ
                 ) result.push(ids[i]);
             }
             continue;
@@ -28,10 +30,12 @@ export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize, axi
         // include the middle item if it's in range
         const x = coords[axisCount * m + 0];
         const y = coords[axisCount * m + 1];
+        const z = coords[axisCount * m + 2];
         if (
             x >= minX && x <= maxX &&
-            y >= minY && y <= maxY
-        ) result.push(ids[m]);
+            y >= minY && y <= maxY &&
+            z >= minZ && z <= maxZ
+    ) result.push(ids[m]);
 
         // queue search in halves that intersect the query
         let next_axis = (1 + axis) % axisCount;
@@ -48,6 +52,11 @@ export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize, axi
             case 1:
                 min_conditional = minY <= y;
                 max_conditional = maxY >= y;
+                break;
+
+            case 2:
+                min_conditional = minZ <= z;
+                max_conditional = maxZ >= z;
                 break;
 
         }

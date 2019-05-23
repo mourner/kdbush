@@ -47,25 +47,21 @@ console.log(`memory: ${  heapSize()}`);
 // console.timeEnd('10000 small bbox queries');
 
 console.time('10000 small radius queries');
-// for (let i = 0; i < 10000; i++) {
-//     const p = randomPoint(1000);
-//     index.within(p.x, p.y, 1);
-// }
 
 for (let i = 0; i < 10000; i++) {
 
     const rangePt = randomPoint3d(1000);
 
-    const ids = index.within(rangePt.x, rangePt.y, rangePt.z, 1);
+    const ids = index.within(rangePt.x, rangePt.y, rangePt.z, 2);
 
-    if (ids.length > 0) {
-
-        const pts = ids.map((id) => {
-            return index.points[ id ];
-        });
-
-        const guard = 707;
-    }
+    // if (ids.length > 0) {
+    //
+    //     const pts = ids.map((id) => {
+    //         return index.points[ id ];
+    //     });
+    //
+    //     const guard = 707;
+    // }
 }
 
 console.timeEnd('10000 small radius queries');

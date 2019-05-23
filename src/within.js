@@ -20,7 +20,9 @@ export default function within(ids, coords, qx, qy, qz, r, nodeSize, axisCount) 
                     qx,
                     qy,
                     qz
-                ) <= r2) result.push(ids[i]);
+                ) <= r2) {
+                    result.push(ids[i]);
+                }
             }
             continue;
         }
@@ -39,7 +41,9 @@ export default function within(ids, coords, qx, qy, qz, r, nodeSize, axisCount) 
             qx,
             qy,
             qz
-        ) <= r2) result.push(ids[m]);
+        ) <= r2) {
+            result.push(ids[m]);
+        }
 
         // queue search in halves that intersect the query
         let next_axis = (1 + axis) % axisCount;
