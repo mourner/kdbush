@@ -3,3 +3,4 @@ package-lock.json
 kdbush.js
 kdbush.min.js
 yarn.lock
+/.idea
