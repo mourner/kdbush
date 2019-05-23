@@ -30,8 +30,8 @@ export default class KDBush {
 
     }
 
-    range(minX, minY, maxX, maxY) {
-        return range(this.ids, this.coords, minX, minY, maxX, maxY, this.nodeSize, this.axisCount);
+    range(minX, minY, minZ, maxX, maxY, maxZ) {
+        return range(this.ids, this.coords, minX, minY, minZ, maxX, maxY, maxZ, this.nodeSize, this.axisCount);
     }
 
     within(x, y, z, r) {

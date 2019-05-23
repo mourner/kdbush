@@ -2,8 +2,9 @@
 import KDBush from './src/index.js';
 import { heapSize, randomPoint3d } from './src/utils.js';
 
+const extent = 5e2;
 const points = [];
-for (let i = 0; i < 1000000; i++) points.push(randomPoint3d(1000));
+for (let i = 0; i < 1e6; i++) points.push(randomPoint3d(extent));
 
 console.log(`memory: ${  heapSize()}`);
 
@@ -26,31 +27,34 @@ console.timeEnd(`index ${ points.length } points`);
 
 console.log(`memory: ${  heapSize()}`);
 
-// console.time('10000 small bbox queries');
-//
-// for (let i = 0; i < 10000; i++) {
-//
-//     const rangePt = randomPoint(1000);
-//
-//     const ids = index.range(rangePt.x - 1, rangePt.y - 1, rangePt.x + 1, rangePt.y + 1);
-//
-//     if (ids.length > 0) {
-//
-//         const pts = ids.map((id) => {
-//             return index.points[ id ];
-//         });
-//
-//         const guard = 707;
-//     }
-// }
-//
-// console.timeEnd('10000 small bbox queries');
+const queryCount = 1e5;
 
-console.time('10000 small radius queries');
+console.time( queryCount + ' bbox queries');
 
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < queryCount; i++) {
 
-    const rangePt = randomPoint3d(1000);
+    const rangePt = randomPoint3d(extent);
+
+    const delta = 2;
+    const ids = index.range(rangePt.x - delta, rangePt.y - delta, rangePt.z - delta, rangePt.x + delta, rangePt.y + delta, rangePt.z + delta);
+
+    // if (ids.length > 0) {
+    //
+    //     const pts = ids.map((id) => {
+    //         return index.points[ id ];
+    //     });
+    //
+    //     const guard = 707;
+    // }
+}
+
+console.timeEnd(queryCount + ' bbox queries');
+
+console.time(queryCount + ' radial queries');
+
+for (let i = 0; i < queryCount; i++) {
+
+    const rangePt = randomPoint3d(extent);
 
     const ids = index.within(rangePt.x, rangePt.y, rangePt.z, 2);
 
@@ -64,4 +68,4 @@ for (let i = 0; i < 10000; i++) {
     // }
 }
 
-console.timeEnd('10000 small radius queries');
+console.timeEnd(queryCount + ' radial queries');
