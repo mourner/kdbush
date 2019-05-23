@@ -28,15 +28,34 @@ export default function range(ids, coords, minX, minY, maxX, maxY, nodeSize) {
         if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[m]);
 
         // queue search in halves that intersect the query
-        if (axis === 0 ? minX <= x : minY <= y) {
+        let next_axis = (1 + axis) % 2;
+        let min_conditional;
+        let max_conditional;
+
+        switch (axis) {
+
+            case 0:
+                min_conditional = minX <= x;
+                max_conditional = maxX >= x;
+                break;
+
+            case 1:
+                min_conditional = minY <= y;
+                max_conditional = maxY >= y;
+                break;
+
+        }
+
+        if (min_conditional) {
             stack.push(left);
             stack.push(m - 1);
-            stack.push(1 - axis);
+            stack.push(next_axis);
         }
-        if (axis === 0 ? maxX >= x : maxY >= y) {
+
+        if (max_conditional) {
             stack.push(m + 1);
             stack.push(right);
-            stack.push(1 - axis);
+            stack.push(next_axis);
         }
     }
 

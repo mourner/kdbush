@@ -27,15 +27,34 @@ export default function within(ids, coords, qx, qy, r, nodeSize) {
         if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
 
         // queue search in halves that intersect the query
-        if (axis === 0 ? qx - r <= x : qy - r <= y) {
+        let next_axis = (1 + axis) % 2;
+        let min_conditional;
+        let max_conditional;
+
+        switch (axis) {
+
+            case 0:
+                min_conditional = qx - r <= x;
+                max_conditional = qx + r >= x;
+                break;
+
+            case 1:
+                min_conditional = qy - r <= y;
+                max_conditional = qy + r >= y;
+                break;
+
+        }
+
+        if (min_conditional) {
             stack.push(left);
             stack.push(m - 1);
-            stack.push(1 - axis);
+            stack.push(next_axis);
         }
-        if (axis === 0 ? qx + r >= x : qy + r >= y) {
+
+        if (max_conditional) {
             stack.push(m + 1);
             stack.push(right);
-            stack.push(1 - axis);
+            stack.push(next_axis);
         }
     }
 
