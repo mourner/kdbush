@@ -5,10 +5,28 @@ const ARRAY_TYPES = [
 ];
 
 const VERSION = 1; // serialized format version
-const headerByteSize = 8;
+const HEADER_SIZE = 8;
 
 export default class KDBush {
-    constructor(numItems, nodeSize = 64, ArrayType = Float64Array) {
+
+    static from(data) {
+        if (!(data instanceof ArrayBuffer)) {
+            throw new Error('Data must be an instance of ArrayBuffer.');
+        }
+        const [magic, versionAndType] = new Uint8Array(data, 0, 2);
+        if (magic !== 0xdb) {
+            throw new Error('Data does not appear to be in a KDBush format.');
+        }
+        if (versionAndType >> 4 !== VERSION) {
+            throw new Error(`Got v${versionAndType >> 4} data when expected v${VERSION}.`);
+        }
+        const [nodeSize] = new Uint16Array(data, 2, 1);
+        const [numItems] = new Uint32Array(data, 4, 1);
+
+        return new KDBush(numItems, nodeSize, ARRAY_TYPES[versionAndType & 0x0f], data);
+    }
+
+    constructor(numItems, nodeSize = 64, ArrayType = Float64Array, data) {
         if (isNaN(numItems) || numItems <= 0) throw new Error(`Unpexpected numItems value: ${numItems}.`);
 
         this.numItems = +numItems;
@@ -25,15 +43,25 @@ export default class KDBush {
             throw new Error(`Unexpected typed array class: ${ArrayType}.`);
         }
 
-        this.data = new ArrayBuffer(headerByteSize + coordsByteSize + idsByteSize);
-        this.ids = new this.IndexArrayType(this.data, headerByteSize, numItems);
-        this.coords = new this.ArrayType(this.data, headerByteSize + idsByteSize, numItems * 2);
-        this._pos = 0;
+        if (data && (data instanceof ArrayBuffer)) { // reconstruct an index from a buffer
+            this.data = data;
+            this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
+            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize, numItems * 2);
+            this._pos = numItems * 2;
+            this._finished = true;
 
-        // set header
-        new Uint8Array(this.data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
-        new Uint16Array(this.data, 2, 1)[0] = nodeSize;
-        new Uint32Array(this.data, 4, 1)[0] = numItems;
+        } else { // initialize a new index
+            this.data = new ArrayBuffer(HEADER_SIZE + coordsByteSize + idsByteSize);
+            this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
+            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize, numItems * 2);
+            this._pos = 0;
+            this._finished = false;
+
+            // set header
+            new Uint8Array(this.data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
+            new Uint16Array(this.data, 2, 1)[0] = nodeSize;
+            new Uint32Array(this.data, 4, 1)[0] = numItems;
+        }
     }
 
     add(x, y) {
@@ -51,10 +79,14 @@ export default class KDBush {
         }
         // kd-sort both arrays for efficient search
         sort(this.ids, this.coords, this.nodeSize, 0, this.numItems - 1, 0);
+
+        this._finished = true;
         return this;
     }
 
     range(minX, minY, maxX, maxY) {
+        if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
+
         const {ids, coords, nodeSize} = this;
         const stack = [0, ids.length - 1, 0];
         const result = [];
@@ -100,6 +132,8 @@ export default class KDBush {
     }
 
     within(qx, qy, r) {
+        if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
+
         const {ids, coords, nodeSize} = this;
         const stack = [0, ids.length - 1, 0];
         const result = [];

@@ -93,6 +93,40 @@ test('radius search', (t) => {
     t.end();
 });
 
+test('reconstructs an index from array buffer', (t) => {
+    const index = makeIndex();
+    const index2 = KDBush.from(index.data);
+
+    t.same(index, index2);
+    t.end();
+});
+
+test('throws an error if added less items than the index size', (t) => {
+    t.throws(() => {
+        const index = new KDBush(points.length);
+        index.finish();
+    });
+    t.end();
+});
+
+test('throws an error if searching before indexing', (t) => {
+    const index = new KDBush(points.length);
+    t.throws(() => {
+        index.range(0, 0, 20, 20);
+    });
+    t.throws(() => {
+        index.within(10, 10, 20);
+    });
+    t.end();
+});
+
+test('does not freeze on numItems = 0', {timeout: 100}, (t) => {
+    t.throws(() => {
+        new KDBush(0); // eslint-disable-line
+    });
+    t.end();
+});
+
 function sqDist(a, b) {
     const dx = a[0] - b[0];
     const dy = a[1] - b[1];
