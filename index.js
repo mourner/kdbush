@@ -1,26 +1,57 @@
 
-const defaultGetX = p => p[0];
-const defaultGetY = p => p[1];
+const ARRAY_TYPES = [
+    Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array,
+    Int32Array, Uint32Array, Float32Array, Float64Array
+];
+
+const VERSION = 1; // serialized format version
+const headerByteSize = 8;
 
 export default class KDBush {
-    constructor(points, getX = defaultGetX, getY = defaultGetY, nodeSize = 64, ArrayType = Float64Array) {
-        this.nodeSize = nodeSize;
-        this.points = points;
+    constructor(numItems, nodeSize = 64, ArrayType = Float64Array) {
+        if (isNaN(numItems) || numItems <= 0) throw new Error(`Unpexpected numItems value: ${numItems}.`);
 
-        const IndexArrayType = points.length < 65536 ? Uint16Array : Uint32Array;
+        this.numItems = +numItems;
+        this.nodeSize = Math.min(Math.max(+nodeSize, 2), 65535);
 
-        // store indices to the input array and coordinates in separate typed arrays
-        const ids = this.ids = new IndexArrayType(points.length);
-        const coords = this.coords = new ArrayType(points.length * 2);
+        this.ArrayType = ArrayType;
+        this.IndexArrayType = numItems < 65536 ? Uint16Array : Uint32Array;
 
-        for (let i = 0; i < points.length; i++) {
-            ids[i] = i;
-            coords[2 * i] = getX(points[i]);
-            coords[2 * i + 1] = getY(points[i]);
+        const arrayTypeIndex = ARRAY_TYPES.indexOf(this.ArrayType);
+        const coordsByteSize = numItems * 2 * this.ArrayType.BYTES_PER_ELEMENT;
+        const idsByteSize = numItems * this.IndexArrayType.BYTES_PER_ELEMENT;
+
+        if (arrayTypeIndex < 0) {
+            throw new Error(`Unexpected typed array class: ${ArrayType}.`);
         }
 
+        this.data = new ArrayBuffer(headerByteSize + coordsByteSize + idsByteSize);
+        this.ids = new this.IndexArrayType(this.data, headerByteSize, numItems);
+        this.coords = new this.ArrayType(this.data, headerByteSize + idsByteSize, numItems * 2);
+        this._pos = 0;
+
+        // set header
+        new Uint8Array(this.data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
+        new Uint16Array(this.data, 2, 1)[0] = nodeSize;
+        new Uint32Array(this.data, 4, 1)[0] = numItems;
+    }
+
+    add(x, y) {
+        const index = this._pos >> 1;
+        this.ids[index] = index;
+        this.coords[this._pos++] = x;
+        this.coords[this._pos++] = y;
+        return index;
+    }
+
+    finish() {
+        const numAdded = this._pos >> 1;
+        if (numAdded !== this.numItems) {
+            throw new Error(`Added ${numAdded} items when expected ${this.numItems}.`);
+        }
         // kd-sort both arrays for efficient search
-        sort(ids, coords, nodeSize, 0, ids.length - 1, 0);
+        sort(this.ids, this.coords, this.nodeSize, 0, this.numItems - 1, 0);
+        return this;
     }
 
     range(minX, minY, maxX, maxY) {
