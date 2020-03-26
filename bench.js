@@ -1,5 +1,5 @@
 
-import KDBush from './src/index.js';
+import KDBush from './index.js';
 import v8 from 'v8';
 
 const randomInt = max => Math.floor(Math.random() * max);
