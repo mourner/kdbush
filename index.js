@@ -49,7 +49,6 @@ export default class KDBush {
             this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = numItems * 2;
             this._finished = true;
-
         } else { // initialize a new index
             this.data = new ArrayBuffer(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
