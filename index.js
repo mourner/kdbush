@@ -33,12 +33,15 @@ export default class KDBush {
         this.nodeSize = Math.min(Math.max(+nodeSize, 2), 65535);
 
         this.ArrayType = ArrayType;
+      
         this.IndexArrayType = numItems < 65536 ? Uint16Array : Uint32Array;
 
         const arrayTypeIndex = ARRAY_TYPES.indexOf(this.ArrayType);
         const coordsByteSize = numItems * 2 * this.ArrayType.BYTES_PER_ELEMENT;
         const idsByteSize = numItems * this.IndexArrayType.BYTES_PER_ELEMENT;
-
+        // Allow up to 4 byte padding 
+        const padCoords = idsByteSize % 8; 
+	    
         if (arrayTypeIndex < 0) {
             throw new Error(`Unexpected typed array class: ${ArrayType}.`);
         }
@@ -46,14 +49,14 @@ export default class KDBush {
         if (data && (data instanceof ArrayBuffer)) { // reconstruct an index from a buffer
             this.data = data;
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
-            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize, numItems * 2);
+            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = numItems * 2;
             this._finished = true;
 
         } else { // initialize a new index
-            this.data = new ArrayBuffer(HEADER_SIZE + coordsByteSize + idsByteSize);
+            this.data = new ArrayBuffer(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
-            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize, numItems * 2);
+            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = 0;
             this._finished = false;
 
