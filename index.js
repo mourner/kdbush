@@ -37,7 +37,7 @@ export default class KDBush {
         const arrayTypeIndex = ARRAY_TYPES.indexOf(this.ArrayType);
         const coordsByteSize = numItems * 2 * this.ArrayType.BYTES_PER_ELEMENT;
         const idsByteSize = numItems * this.IndexArrayType.BYTES_PER_ELEMENT;
-        const padCoords = idsByteSize % 8;
+        const padCoords = (8 - idsByteSize % 8) % 8;
 
         if (arrayTypeIndex < 0) {
             throw new Error(`Unexpected typed array class: ${ArrayType}.`);
