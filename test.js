@@ -50,7 +50,7 @@ test('range search', (t) => {
     }
     t.pass('result points in range');
 
-    for (const id of result) {
+    for (const id of ids) {
         const p = points[id];
         if (result.indexOf(id) < 0 && p[0] >= 20 && p[0] <= 50 && p[1] >= 30 && p[1] <= 70)
             t.fail('outside point not in range');
@@ -77,7 +77,7 @@ test('radius search', (t) => {
     }
     t.pass('result points in range');
 
-    for (const id of result) {
+    for (const id of ids) {
         const p = points[id];
         if (result.indexOf(id) < 0 && sqDist(p, qp) <= r2)
             t.fail('outside point not in range');
