@@ -87,6 +87,18 @@ test('radius search', (t) => {
     t.end();
 });
 
+test('import/export', (t) => {
+    const getX = p => p[0];
+    const getY = p => p[1];
+    const index1 = new KDBush(points, getX, getY, 10);
+    const result1 = index1.within(50, 50, 20);
+    const index2 = KDBush.from(index1.export());
+    const result2 = index2.within(50, 50, 20);
+
+    t.same(result2, result1, 'imported index returns equal data');
+    t.end();
+});
+
 function sqDist(a, b) {
     const dx = a[0] - b[0];
     const dy = a[1] - b[1];
