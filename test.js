@@ -1,6 +1,6 @@
-
-import test from 'tape';
 import KDBush from './index.js';
+import test from 'node:test';
+import assert from 'node:assert/strict';
 
 /* eslint comma-spacing: 0 */
 
@@ -33,40 +33,36 @@ function makeIndex() {
     return index.finish();
 }
 
-test('creates an index', (t) => {
+test('creates an index', () => {
     const index = makeIndex();
 
-    t.same(Array.from(index.ids), ids, 'ids are kd-sorted');
-    t.same(Array.from(index.coords), coords, 'coords are kd-sorted');
-
-    t.end();
+    assert.deepEqual(Array.from(index.ids), ids, 'ids are kd-sorted');
+    assert.deepEqual(Array.from(index.coords), coords, 'coords are kd-sorted');
 });
 
-test('range search', (t) => {
+test('range search', () => {
     const index = makeIndex();
 
     const result = index.range(20, 30, 50, 70);
 
-    t.same(result, [60,20,45,3,17,71,44,19,18,15,69,90,62,96,47,8,77,72], 'returns ids');
+    assert.deepEqual(result, [60,20,45,3,17,71,44,19,18,15,69,90,62,96,47,8,77,72], 'returns ids');
 
     for (const id of result) {
         const p = points[id];
         if (p[0] < 20 || p[0] > 50 || p[1] < 30 || p[1] > 70)
-            t.fail('result point in range');
+            assert.fail('result point in range');
     }
-    t.pass('result points in range');
+    // result points in range
 
     for (const id of ids) {
         const p = points[id];
         if (result.indexOf(id) < 0 && p[0] >= 20 && p[0] <= 50 && p[1] >= 30 && p[1] <= 70)
-            t.fail('outside point not in range');
+            assert.fail('outside point not in range');
     }
-    t.pass('outside points not in range');
-
-    t.end();
+    // outside points not in range
 });
 
-test('radius search', (t) => {
+test('radius search', () => {
     const index = makeIndex();
 
     const qp = [50, 50];
@@ -75,56 +71,50 @@ test('radius search', (t) => {
 
     const result = index.within(qp[0], qp[1], r);
 
-    t.same(result, [60,6,25,92,42,20,45,3,71,44,18,96], 'returns ids');
+    assert.deepEqual(result, [60,6,25,92,42,20,45,3,71,44,18,96], 'returns ids');
 
     for (const id of result) {
         const p = points[id];
-        if (sqDist(p, qp) > r2) t.fail('result point in range');
+        if (sqDist(p, qp) > r2) assert.fail('result point in range');
     }
-    t.pass('result points in range');
+    // result points in range
 
     for (const id of ids) {
         const p = points[id];
         if (result.indexOf(id) < 0 && sqDist(p, qp) <= r2)
-            t.fail('outside point not in range');
+            assert.fail('outside point not in range');
     }
-    t.pass('outside points not in range');
-
-    t.end();
+    // outside points not in range
 });
 
-test('reconstructs an index from array buffer', (t) => {
+test('reconstructs an index from array buffer', () => {
     const index = makeIndex();
     const index2 = KDBush.from(index.data);
 
-    t.same(index, index2);
-    t.end();
+    assert.deepEqual(index, index2);
 });
 
-test('throws an error if added less items than the index size', (t) => {
-    t.throws(() => {
+test('throws an error if added less items than the index size', () => {
+    assert.throws(() => {
         const index = new KDBush(points.length);
         index.finish();
     });
-    t.end();
 });
 
-test('throws an error if searching before indexing', (t) => {
+test('throws an error if searching before indexing', () => {
     const index = new KDBush(points.length);
-    t.throws(() => {
+    assert.throws(() => {
         index.range(0, 0, 20, 20);
     });
-    t.throws(() => {
+    assert.throws(() => {
         index.within(10, 10, 20);
     });
-    t.end();
 });
 
-test('does not freeze on numItems = 0', {timeout: 100}, (t) => {
-    t.throws(() => {
+test('does not freeze on numItems = 0', {timeout: 100}, () => {
+    assert.throws(() => {
         new KDBush(0); // eslint-disable-line
     });
-    t.end();
 });
 
 function sqDist(a, b) {
