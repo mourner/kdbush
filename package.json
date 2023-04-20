@@ -24,7 +24,7 @@
     "test": "tsc && node test.js",
     "bench": "node bench.js",
     "build": "rollup -c",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run test && npm run build"
   },
   "eslintConfig": {
     "extends": "mourner"
