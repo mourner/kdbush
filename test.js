@@ -36,8 +36,8 @@ function makeIndex() {
 test('creates an index', (t) => {
     const index = makeIndex();
 
-    t.same(index.ids, ids, 'ids are kd-sorted');
-    t.same(index.coords, coords, 'coords are kd-sorted');
+    t.same(Array.from(index.ids), ids, 'ids are kd-sorted');
+    t.same(Array.from(index.coords), coords, 'coords are kd-sorted');
 
     t.end();
 });
