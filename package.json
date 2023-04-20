@@ -2,7 +2,7 @@
   "name": "kdbush",
   "version": "3.0.0",
   "description": "A very fast static 2D index for points based on kd-tree.",
-  "module": "src/index.js",
+  "module": "index.js",
   "main": "kdbush.js",
   "jsdelivr": "kdbush.min.js",
   "unpkg": "kdbush.min.js",
@@ -20,7 +20,7 @@
     "tape": "^4.13.2"
   },
   "scripts": {
-    "pretest": "eslint src test.js bench.js rollup.config.js",
+    "pretest": "eslint index.js test.js bench.js rollup.config.js",
     "test": "tape -r esm test.js",
     "bench": "node -r esm bench.js",
     "build": "rollup -c",

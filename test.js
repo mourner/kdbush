@@ -1,6 +1,6 @@
 
 import test from 'tape';
-import KDBush from './src/index.js';
+import KDBush from './index.js';
 
 /* eslint comma-spacing: 0 */
 
@@ -27,8 +27,14 @@ const coords = [
     53,49,60,50,68,57,70,56,77,63,86,71,90,52,83,71,82,72,81,94,51,75,53,95,39,78,53,88,62,84,72,77,73,99,76,73,81,88,
     87,96,98,96,82];
 
+function makeIndex() {
+    const index = new KDBush(points.length, 10);
+    for (const [x, y] of points) index.add(x, y);
+    return index.finish();
+}
+
 test('creates an index', (t) => {
-    const index = new KDBush(points, undefined, undefined, 10);
+    const index = makeIndex();
 
     t.same(index.ids, ids, 'ids are kd-sorted');
     t.same(index.coords, coords, 'coords are kd-sorted');
@@ -37,7 +43,7 @@ test('creates an index', (t) => {
 });
 
 test('range search', (t) => {
-    const index = new KDBush(points, undefined, undefined, 10);
+    const index = makeIndex();
 
     const result = index.range(20, 30, 50, 70);
 
@@ -61,7 +67,7 @@ test('range search', (t) => {
 });
 
 test('radius search', (t) => {
-    const index = new KDBush(points, undefined, undefined, 10);
+    const index = makeIndex();
 
     const qp = [50, 50];
     const r = 20;
@@ -84,6 +90,40 @@ test('radius search', (t) => {
     }
     t.pass('outside points not in range');
 
+    t.end();
+});
+
+test('reconstructs an index from array buffer', (t) => {
+    const index = makeIndex();
+    const index2 = KDBush.from(index.data);
+
+    t.same(index, index2);
+    t.end();
+});
+
+test('throws an error if added less items than the index size', (t) => {
+    t.throws(() => {
+        const index = new KDBush(points.length);
+        index.finish();
+    });
+    t.end();
+});
+
+test('throws an error if searching before indexing', (t) => {
+    const index = new KDBush(points.length);
+    t.throws(() => {
+        index.range(0, 0, 20, 20);
+    });
+    t.throws(() => {
+        index.within(10, 10, 20);
+    });
+    t.end();
+});
+
+test('does not freeze on numItems = 0', {timeout: 100}, (t) => {
+    t.throws(() => {
+        new KDBush(0); // eslint-disable-line
+    });
     t.end();
 });
 
