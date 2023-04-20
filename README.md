@@ -41,7 +41,7 @@ const neighborIds = index.within(x, y, 5);
 postMessage(index.data, [index.data]);
 
 // reconstruct the index from a raw array buffer
-const index = Flatbush.from(e.data);
+const index = KDBush.from(e.data);
 ```
 
 ## Install
