@@ -6,6 +6,7 @@
   "main": "kdbush.js",
   "module": "index.js",
   "exports": "./index.js",
+  "types": "index.d.ts",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -15,11 +16,12 @@
     "@rollup/plugin-terser": "^0.4.1",
     "eslint": "^8.38.0",
     "eslint-config-mourner": "^3.0.0",
-    "rollup": "^3.20.6"
+    "rollup": "^3.20.6",
+    "typescript": "^5.0.4"
   },
   "scripts": {
     "pretest": "eslint index.js test.js bench.js rollup.config.js",
-    "test": "tape test.js",
+    "test": "tsc && node test.js",
     "bench": "node bench.js",
     "build": "rollup -c",
     "prepublishOnly": "npm run build"
@@ -39,7 +41,7 @@
   "files": [
     "kdbush.js",
     "kdbush.min.js",
-    "src"
+    "index.d.ts"
   ],
   "author": "Vladimir Agafonkin",
   "license": "ISC"

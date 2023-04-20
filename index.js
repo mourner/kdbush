@@ -4,11 +4,17 @@ const ARRAY_TYPES = [
     Int32Array, Uint32Array, Float32Array, Float64Array
 ];
 
+/** @typedef {Int8ArrayConstructor | Uint8ArrayConstructor | Uint8ClampedArrayConstructor | Int16ArrayConstructor | Uint16ArrayConstructor | Int32ArrayConstructor | Uint32ArrayConstructor | Float32ArrayConstructor | Float64ArrayConstructor} TypedArrayConstructor */
+
 const VERSION = 1; // serialized format version
 const HEADER_SIZE = 8;
 
 export default class KDBush {
 
+    /**
+     * Creates an index from raw `ArrayBuffer` data.
+     * @param {ArrayBuffer} data
+     */
     static from(data) {
         if (!(data instanceof ArrayBuffer)) {
             throw new Error('Data must be an instance of ArrayBuffer.');
@@ -17,15 +23,27 @@ export default class KDBush {
         if (magic !== 0xdb) {
             throw new Error('Data does not appear to be in a KDBush format.');
         }
-        if (versionAndType >> 4 !== VERSION) {
-            throw new Error(`Got v${versionAndType >> 4} data when expected v${VERSION}.`);
+        const version = versionAndType >> 4;
+        if (version !== VERSION) {
+            throw new Error(`Got v${version} data when expected v${VERSION}.`);
+        }
+        const ArrayType = ARRAY_TYPES[versionAndType & 0x0f];
+        if (!ArrayType) {
+            throw new Error('Unrecognized array type.');
         }
         const [nodeSize] = new Uint16Array(data, 2, 1);
         const [numItems] = new Uint32Array(data, 4, 1);
 
-        return new KDBush(numItems, nodeSize, ARRAY_TYPES[versionAndType & 0x0f], data);
+        return new KDBush(numItems, nodeSize, ArrayType, data);
     }
 
+    /**
+     * Creates an index that will hold a given number of items.
+     * @param {number} numItems
+     * @param {number} [nodeSize=64] Size of the KD-tree node (64 by default).
+     * @param {TypedArrayConstructor} [ArrayType=Float64Array] The array type used for coordinates storage (`Float64Array` by default).
+     * @param {ArrayBuffer} [data] (For internal use only)
+     */
     constructor(numItems, nodeSize = 64, ArrayType = Float64Array, data) {
         if (isNaN(numItems) || numItems <= 0) throw new Error(`Unpexpected numItems value: ${numItems}.`);
 
@@ -63,6 +81,12 @@ export default class KDBush {
         }
     }
 
+    /**
+     * Add a point to the index.
+     * @param {number} x
+     * @param {number} y
+     * @returns {number} An incremental index associated with the added item (starting from `0`).
+     */
     add(x, y) {
         const index = this._pos >> 1;
         this.ids[index] = index;
@@ -71,6 +95,9 @@ export default class KDBush {
         return index;
     }
 
+    /**
+     * Perform indexing of the added points.
+     */
     finish() {
         const numAdded = this._pos >> 1;
         if (numAdded !== this.numItems) {
@@ -83,6 +110,14 @@ export default class KDBush {
         return this;
     }
 
+    /**
+     * Search the index for items within a given bounding box.
+     * @param {number} minX
+     * @param {number} minY
+     * @param {number} maxX
+     * @param {number} maxY
+     * @returns {number[]} An array of indices correponding to the found items.
+     */
     range(minX, minY, maxX, maxY) {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
@@ -92,9 +127,9 @@ export default class KDBush {
 
         // recursively search for items in range in the kd-sorted arrays
         while (stack.length) {
-            const axis = stack.pop();
-            const right = stack.pop();
-            const left = stack.pop();
+            const axis = stack.pop() || 0;
+            const right = stack.pop() || 0;
+            const left = stack.pop() || 0;
 
             // if we reached "tree node", search linearly
             if (right - left <= nodeSize) {
@@ -130,6 +165,13 @@ export default class KDBush {
         return result;
     }
 
+    /**
+     * Search the index for items within a given radius.
+     * @param {number} qx
+     * @param {number} qy
+     * @param {number} r Query radius.
+     * @returns {number[]} An array of indices correponding to the found items.
+     */
     within(qx, qy, r) {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
@@ -140,9 +182,9 @@ export default class KDBush {
 
         // recursively search for items within radius in the kd-sorted arrays
         while (stack.length) {
-            const axis = stack.pop();
-            const right = stack.pop();
-            const left = stack.pop();
+            const axis = stack.pop() || 0;
+            const right = stack.pop() || 0;
+            const left = stack.pop() || 0;
 
             // if we reached "tree node", search linearly
             if (right - left <= nodeSize) {
@@ -177,6 +219,14 @@ export default class KDBush {
     }
 }
 
+/**
+ * @param {Uint16Array | Uint32Array} ids
+ * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {number} nodeSize
+ * @param {number} left
+ * @param {number} right
+ * @param {number} axis
+ */
 function sort(ids, coords, nodeSize, left, right, axis) {
     if (right - left <= nodeSize) return;
 
@@ -191,8 +241,16 @@ function sort(ids, coords, nodeSize, left, right, axis) {
     sort(ids, coords, nodeSize, m + 1, right, 1 - axis);
 }
 
-// custom Floyd-Rivest selection algorithm: sort ids and coords so that
-// [left..k-1] items are smaller than k-th item (on either x or y axis)
+/**
+ * Custom Floyd-Rivest selection algorithm: sort ids and coords so that
+ * [left..k-1] items are smaller than k-th item (on either x or y axis)
+ * @param {Uint16Array | Uint32Array} ids
+ * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {number} k
+ * @param {number} left
+ * @param {number} right
+ * @param {number} axis
+ */
 function select(ids, coords, k, left, right, axis) {
 
     while (right > left) {
@@ -233,18 +291,35 @@ function select(ids, coords, k, left, right, axis) {
     }
 }
 
+/**
+ * @param {Uint16Array | Uint32Array} ids
+ * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {number} i
+ * @param {number} j
+ */
 function swapItem(ids, coords, i, j) {
     swap(ids, i, j);
     swap(coords, 2 * i, 2 * j);
     swap(coords, 2 * i + 1, 2 * j + 1);
 }
 
+/**
+ * @param {InstanceType<TypedArrayConstructor>} arr
+ * @param {number} i
+ * @param {number} j
+ */
 function swap(arr, i, j) {
     const tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
 }
 
+/**
+ * @param {number} ax
+ * @param {number} ay
+ * @param {number} bx
+ * @param {number} by
+ */
 function sqDist(ax, ay, bx, by) {
     const dx = ax - bx;
     const dy = ay - by;

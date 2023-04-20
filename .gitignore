@@ -4,3 +4,4 @@ kdbush.js
 kdbush.min.js
 yarn.lock
 pnpm-lock.yaml
+index.d.ts
