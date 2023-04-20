@@ -6,7 +6,7 @@ Compared to [RBush](https://github.com/mourner/rbush):
 - **Points only** — no rectangles.
 - **Static** — you can't add/remove items after initial indexing.
 - **Faster** indexing and search, with lower **memory** footprint.
-- Index is stored as a single **array buffer** (so you can [transfer](https://developer.mozilla.org/en-US/docs/Glossary/Transferable_objects) it between threads or store it as a compact binary file).
+- Index is stored as a single **array buffer** (so you can [transfer](https://developer.mozilla.org/en-US/docs/Glossary/Transferable_objects) it between threads or store it as a compact file).
 
 
 If you need a static index for rectangles, not only points, see [Flatbush](https://github.com/mourner/flatbush). When indexing points, KDBush has the advantage of taking ~2x less memory than Flatbush.
@@ -74,6 +74,10 @@ Creates an index that will hold a given number of points (`numItems`). Additiona
 
 - `nodeSize`: Size of the KD-tree node, `64` by default. Higher means faster indexing but slower search, and vise versa.
 - `ArrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes the index faster and smaller.
+
+#### index.add(x, y)
+
+Adds a given point to the index. Returns a zero-based, incremental number that represents the newly added point.
 
 #### index.range(minX, minY, maxX, maxY)
 
