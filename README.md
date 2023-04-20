@@ -3,15 +3,11 @@
 A very fast static spatial index for 2D points based on a flat KD-tree.
 Compared to [RBush](https://github.com/mourner/rbush):
 
-- points only — no rectangles
-- static — you can't add/remove items
-- indexing is 5-8 times faster
+- **Points only** — no rectangles.
+- **Static** — you can't add/remove items after initial indexing.
+- **Faster** indexing and search, with lower **memory** footprint.
+- Index is stored as a single **array buffer** (so you can [transfer](https://developer.mozilla.org/en-US/docs/Glossary/Transferable_objects) it between threads or store it as a compact binary file).
 
-```js
-const index = new KDBush(points);         // make an index
-const ids1 = index.range(10, 10, 20, 20); // bbox search - minX, minY, maxX, maxY
-const ids2 = index.within(10, 10, 5);     // radius search - x, y, radius
-```
 
 If you need a static index for rectangles, not only points, see [Flatbush](https://github.com/mourner/flatbush). When indexing points, KDBush has the advantage of taking ~2x less memory than Flatbush.
 
@@ -20,7 +16,7 @@ If you need a static index for rectangles, not only points, see [Flatbush](https
 
 ## Usage
 
-```
+```js
 // initialize KDBush for 1000 items
 const index = new KDBush(1000);
 
