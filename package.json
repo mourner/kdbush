@@ -41,6 +41,7 @@
   "files": [
     "kdbush.js",
     "kdbush.min.js",
+    "index.js",
     "index.d.ts"
   ],
   "author": "Vladimir Agafonkin",
