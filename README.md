@@ -13,54 +13,90 @@ const ids1 = index.range(10, 10, 20, 20); // bbox search - minX, minY, maxX, max
 const ids2 = index.within(10, 10, 5);     // radius search - x, y, radius
 ```
 
+If you need a static index for rectangles, not only points, see [Flatbush](https://github.com/mourner/flatbush). When indexing points, KDBush has the advantage of taking ~2x less memory than Flatbush.
+
 [![Build Status](https://github.com/mourner/kdbush/workflows/Node/badge.svg?branch=master)](https://github.com/mourner/kdbush/actions)
 [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
 
-## Install
+## Usage
 
-Install using NPM (`npm install kdbush`) or Yarn (`yarn add kdbush`), then:
+```
+// initialize KDBush for 1000 items
+const index = new KDBush(1000);
 
-```js
-// import as a ES module
-import KDBush from 'kdbush';
+// fill it with 1000 points
+for (const {x, y} of items) {
+    index.add(x, y);
+}
 
-// or require in Node / Browserify
-const KDBush = require('kdbush');
+// perform the indexing
+index.finish();
+
+// make a bounding box query
+const foundIds = index.range(minX, minY, maxX, maxY);
+
+// map ids to original items
+const foundItems = foundIds.map(i => items[i]);
+
+// make a radius query
+const neighborIds = index.within(x, y, 5);
+
+// instantly transfer the index from a worker to the main thread
+postMessage(index.data, [index.data]);
+
+// reconstruct the index from a raw array buffer
+const index = Flatbush.from(e.data);
 ```
 
-Or use a browser build directly:
+## Install
+
+Install with NPM: `npm install kdbush`, then import as a module:
+
+```js
+import KDBush from 'kdbush';
+```
+
+Or use as a module directly in the browser with [jsDelivr](https://www.jsdelivr.com/esm):
 
 ```html
-<script src="https://unpkg.com/kdbush@3.0.0/kdbush.min.js"></script>
+<script type="module">
+    import KDBush from 'https://cdn.jsdelivr.net/npm/kdbush/+esm';
+</script>
+```
+
+Alternatively, there's a browser bundle with a `KDBush` global variable:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/kdbush"></script>
 ```
 
 ## API
 
-#### new KDBush(points[, getX, getY, nodeSize, arrayType])
+#### new KDBush(numItems[, nodeSize, ArrayType])
 
-Creates an index from the given points.
+Creates an index that will hold a given number of points (`numItems`). Additionally accepts:
 
-- `points`: Input array of points.
-- `getX`, `getY`: Functions to get `x` and `y` from an input point. By default, it assumes `[x, y]` format.
 - `nodeSize`: Size of the KD-tree node, `64` by default. Higher means faster indexing but slower search, and vise versa.
-- `arrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes things a bit faster.
-
-```js
-const index = new KDBush(points, p => p.x, p => p.y, 64, Int32Array);
-```
+- `ArrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes the index faster and smaller.
 
 #### index.range(minX, minY, maxX, maxY)
 
-Finds all items within the given bounding box and returns an array of indices that refer to the items in the original `points` input array.
-
-```js
-const results = index.range(10, 10, 20, 20).map(id => points[id]);
-```
+Finds all items within the given bounding box and returns an array of indices that refer to the order the items were added (the values returned by `index.add(x, y)`).
 
 #### index.within(x, y, radius)
 
 Finds all items within a given radius from the query point and returns an array of indices.
 
-```js
-const results = index.within(10, 10, 5).map(id => points[id]);
-```
+#### `KDBush.from(data)`
+
+Recreates a KDBush index from raw `ArrayBuffer` data
+(that's exposed as `index.data` on a previously indexed KDBush instance).
+Very useful for transferring or sharing indices between threads or storing them in a file.
+
+### Properties
+
+- `data`: array buffer that holds the index.
+- `numItems`: number of stored items.
+- `nodeSize`: number of items in a KD-tree node.
+- `ArrayType`: array type used for internal coordinates storage.
+- `IndexArrayType`: array type used for internal item indices storage.

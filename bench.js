@@ -18,6 +18,7 @@ const index = new KDBush(N, 64, Uint32Array);
 for (let i = 0; i < coords.length; i += 2) index.add(coords[i], coords[i + 1]);
 index.finish();
 console.timeEnd(`index ${N} points`);
+console.log(`index size: ${index.data.byteLength.toLocaleString()}`)
 
 console.log(`memory: ${heapSize()}`);
 
