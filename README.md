@@ -1,4 +1,4 @@
-## KDBush [![Build Status](https://travis-ci.org/mourner/kdbush.svg?branch=master)](https://travis-ci.org/mourner/kdbush) [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
+## KDBush
 
 A very fast static spatial index for 2D points based on a flat KD-tree.
 Compared to [RBush](https://github.com/mourner/rbush):
@@ -12,6 +12,9 @@ const index = new KDBush(points);         // make an index
 const ids1 = index.range(10, 10, 20, 20); // bbox search - minX, minY, maxX, maxY
 const ids2 = index.within(10, 10, 5);     // radius search - x, y, radius
 ```
+
+[![Build Status](https://github.com/mourner/kdbush/workflows/Node/badge.svg?branch=master)](https://github.com/mourner/kdbush/actions)
+[![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
 
 ## Install
 
