@@ -1,6 +1,6 @@
 {
   "name": "kdbush",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A very fast static 2D index for points based on kd-tree.",
   "type": "module",
   "main": "kdbush.js",
