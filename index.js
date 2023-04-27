@@ -45,7 +45,7 @@ export default class KDBush {
      * @param {ArrayBuffer} [data] (For internal use only)
      */
     constructor(numItems, nodeSize = 64, ArrayType = Float64Array, data) {
-        if (isNaN(numItems) || numItems <= 0) throw new Error(`Unpexpected numItems value: ${numItems}.`);
+        if (isNaN(numItems) || numItems < 0) throw new Error(`Unpexpected numItems value: ${numItems}.`);
 
         this.numItems = +numItems;
         this.nodeSize = Math.min(Math.max(+nodeSize, 2), 65535);

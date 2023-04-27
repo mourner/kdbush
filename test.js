@@ -111,9 +111,12 @@ test('throws an error if searching before indexing', () => {
     });
 });
 
-test('does not freeze on numItems = 0', {timeout: 100}, () => {
-    assert.throws(() => {
-        new KDBush(0); // eslint-disable-line
+test('does not complain about zero items', () => {
+    assert.doesNotThrow(() => {
+        const index = new KDBush(0);
+        index.finish();
+        assert.deepEqual(index.range(0, 0, 10, 10), []);
+        assert.deepEqual(index.within(0, 0, 10), []);
     });
 });
 
