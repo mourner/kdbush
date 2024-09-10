@@ -2,7 +2,7 @@ import KDBush from './index.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-/* eslint comma-spacing: 0 */
+/* eslint @stylistic/js/comma-spacing: 0 */
 
 const points = [
     [54,1],[97,21],[65,35],[33,54],[95,39],[54,3],[53,54],[84,72],[33,34],[43,15],[52,83],[81,23],[1,61],[38,74],

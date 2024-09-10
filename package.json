@@ -13,21 +13,18 @@
     "url": "git://github.com/mourner/kdbush.git"
   },
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.1",
-    "eslint": "^8.38.0",
-    "eslint-config-mourner": "^3.0.0",
-    "rollup": "^3.20.6",
-    "typescript": "^5.0.4"
+    "@rollup/plugin-terser": "^0.4.4",
+    "eslint": "^9.10.0",
+    "eslint-config-mourner": "^4.0.2",
+    "rollup": "^4.21.2",
+    "typescript": "^5.6.2"
   },
   "scripts": {
-    "pretest": "eslint index.js test.js bench.js rollup.config.js",
+    "pretest": "eslint",
     "test": "tsc && node test.js",
     "bench": "node bench.js",
     "build": "rollup -c",
     "prepublishOnly": "npm run test && npm run build"
-  },
-  "eslintConfig": {
-    "extends": "mourner"
   },
   "keywords": [
     "index",

@@ -5,8 +5,7 @@
         "strict": true,
         "emitDeclarationOnly": true,
         "declaration": true,
-        "target": "es2017",
-        "moduleResolution": "nodenext"
+        "target": "es2017"
     },
     "files": [
         "index.js"
