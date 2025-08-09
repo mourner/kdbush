@@ -5,6 +5,7 @@ const ARRAY_TYPES = [
 ];
 
 /** @typedef {Int8ArrayConstructor | Uint8ArrayConstructor | Uint8ClampedArrayConstructor | Int16ArrayConstructor | Uint16ArrayConstructor | Int32ArrayConstructor | Uint32ArrayConstructor | Float32ArrayConstructor | Float64ArrayConstructor} TypedArrayConstructor */
+/** @typedef {Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array} TypedArray */
 
 const VERSION = 1; // serialized format version
 const HEADER_SIZE = 8;
@@ -43,7 +44,7 @@ export default class KDBush {
      * @param {number} numItems
      * @param {number} [nodeSize=64] Size of the KD-tree node (64 by default).
      * @param {TypedArrayConstructor} [ArrayType=Float64Array] The array type used for coordinates storage (`Float64Array` by default).
-     * @param {ArrayBufferConstructor} [ArrayBufferType=ArrayBuffer] The array buffer type used for storage (`ArrayBuffer` by default).
+     * @param {ArrayBufferConstructor | SharedArrayBufferConstructor} [ArrayBufferType=ArrayBuffer] The array buffer type used for storage (`ArrayBuffer` by default).
      * @param {ArrayBufferLike} [data] (For internal use only)
      */
     constructor(numItems, nodeSize = 64, ArrayType = Float64Array, ArrayBufferType = ArrayBuffer, data) {
@@ -65,22 +66,26 @@ export default class KDBush {
 
         if (data) { // reconstruct an index from a buffer
             this.data = data;
-            this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
-            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
+            // @ts-expect-error TS can't handle SharedArrayBuffer overloads
+            this.ids = new this.IndexArrayType(data, HEADER_SIZE, numItems);
+            // @ts-expect-error TS can't handle SharedArrayBuffer overloads
+            this.coords = new ArrayType(data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = numItems * 2;
             this._finished = true;
 
         } else { // initialize a new index
-            this.data = new ArrayBufferType(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
-            this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
-            this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
+            const data = this.data = new ArrayBufferType(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
+            // @ts-expect-error TS can't handle SharedArrayBuffer overloads
+            this.ids = new this.IndexArrayType(data, HEADER_SIZE, numItems);
+            // @ts-expect-error TS can't handle SharedArrayBuffer overloads
+            this.coords = new ArrayType(data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = 0;
             this._finished = false;
 
             // set header
-            new Uint8Array(this.data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
-            new Uint16Array(this.data, 2, 1)[0] = nodeSize;
-            new Uint32Array(this.data, 4, 1)[0] = numItems;
+            new Uint8Array(data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
+            new Uint16Array(data, 2, 1)[0] = nodeSize;
+            new Uint32Array(data, 4, 1)[0] = numItems;
         }
     }
 
@@ -224,7 +229,7 @@ export default class KDBush {
 
 /**
  * @param {Uint16Array | Uint32Array} ids
- * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {TypedArray} coords
  * @param {number} nodeSize
  * @param {number} left
  * @param {number} right
@@ -248,7 +253,7 @@ function sort(ids, coords, nodeSize, left, right, axis) {
  * Custom Floyd-Rivest selection algorithm: sort ids and coords so that
  * [left..k-1] items are smaller than k-th item (on either x or y axis)
  * @param {Uint16Array | Uint32Array} ids
- * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {TypedArray} coords
  * @param {number} k
  * @param {number} left
  * @param {number} right
@@ -296,7 +301,7 @@ function select(ids, coords, k, left, right, axis) {
 
 /**
  * @param {Uint16Array | Uint32Array} ids
- * @param {InstanceType<TypedArrayConstructor>} coords
+ * @param {TypedArray} coords
  * @param {number} i
  * @param {number} j
  */
@@ -307,7 +312,7 @@ function swapItem(ids, coords, i, j) {
 }
 
 /**
- * @param {InstanceType<TypedArrayConstructor>} arr
+ * @param {TypedArray} arr
  * @param {number} i
  * @param {number} j
  */
