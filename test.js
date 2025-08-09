@@ -27,8 +27,8 @@ const coords = [
     53,49,60,50,68,57,70,56,77,63,86,71,90,52,83,71,82,72,81,94,51,75,53,95,39,78,53,88,62,84,72,77,73,99,76,73,81,88,
     87,96,98,96,82];
 
-function makeIndex() {
-    const index = new KDBush(points.length, 10);
+function makeIndex(ArrayBufferType = ArrayBuffer) {
+    const index = new KDBush(points.length, 10, undefined, ArrayBufferType);
     for (const [x, y] of points) index.add(x, y);
     return index.finish();
 }
@@ -118,6 +118,17 @@ test('does not complain about zero items', () => {
         assert.deepEqual(index.range(0, 0, 10, 10), []);
         assert.deepEqual(index.within(0, 0, 10), []);
     });
+});
+
+test('creates an index using SharedArrayBuffer', () => {
+    const index = makeIndex(SharedArrayBuffer);
+    assert(index.data instanceof SharedArrayBuffer);
+});
+
+test('reconstructs an index from a SharedArrayBuffer', () => {
+    const index = makeIndex(SharedArrayBuffer);
+    const index2 = KDBush.from(index.data);
+    assert.deepEqual(index, index2);
 });
 
 function sqDist(a, b) {

@@ -13,11 +13,11 @@ export default class KDBush {
 
     /**
      * Creates an index from raw `ArrayBuffer` data.
-     * @param {ArrayBuffer} data
+     * @param {ArrayBufferLike} data
      */
     static from(data) {
-        if (!(data instanceof ArrayBuffer)) {
-            throw new Error('Data must be an instance of ArrayBuffer.');
+        if (!(data instanceof ArrayBuffer) && !(data instanceof SharedArrayBuffer)) {
+            throw new Error('Data must be an instance of ArrayBuffer or SharedArrayBuffer.');
         }
         const [magic, versionAndType] = new Uint8Array(data, 0, 2);
         if (magic !== 0xdb) {
@@ -34,7 +34,7 @@ export default class KDBush {
         const [nodeSize] = new Uint16Array(data, 2, 1);
         const [numItems] = new Uint32Array(data, 4, 1);
 
-        return new KDBush(numItems, nodeSize, ArrayType, data);
+        return new KDBush(numItems, nodeSize, ArrayType, undefined, data);
     }
 
     /**
@@ -42,9 +42,10 @@ export default class KDBush {
      * @param {number} numItems
      * @param {number} [nodeSize=64] Size of the KD-tree node (64 by default).
      * @param {TypedArrayConstructor} [ArrayType=Float64Array] The array type used for coordinates storage (`Float64Array` by default).
-     * @param {ArrayBuffer} [data] (For internal use only)
+     * @param {ArrayBufferConstructor} [ArrayBufferType=ArrayBuffer] The array buffer type used for storage (`ArrayBuffer` by default).
+     * @param {ArrayBufferLike} [data] (For internal use only)
      */
-    constructor(numItems, nodeSize = 64, ArrayType = Float64Array, data) {
+    constructor(numItems, nodeSize = 64, ArrayType = Float64Array, ArrayBufferType = ArrayBuffer, data) {
         if (isNaN(numItems) || numItems < 0) throw new Error(`Unexpected numItems value: ${numItems}.`);
 
         this.numItems = +numItems;
@@ -61,14 +62,14 @@ export default class KDBush {
             throw new Error(`Unexpected typed array class: ${ArrayType}.`);
         }
 
-        if (data && (data instanceof ArrayBuffer)) { // reconstruct an index from a buffer
+        if ((data instanceof ArrayBuffer) || (data instanceof SharedArrayBuffer)) { // reconstruct an index from a buffer
             this.data = data;
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
             this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = numItems * 2;
             this._finished = true;
         } else { // initialize a new index
-            this.data = new ArrayBuffer(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
+            this.data = new ArrayBufferType(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
             this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = 0;
