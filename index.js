@@ -16,7 +16,8 @@ export default class KDBush {
      * @param {ArrayBufferLike} data
      */
     static from(data) {
-        if (!(data instanceof ArrayBuffer) && !(data instanceof SharedArrayBuffer)) {
+        // @ts-expect-error duck typing array buffers
+        if (!data || data.byteLength === undefined || data.buffer) {
             throw new Error('Data must be an instance of ArrayBuffer or SharedArrayBuffer.');
         }
         const [magic, versionAndType] = new Uint8Array(data, 0, 2);
@@ -62,12 +63,13 @@ export default class KDBush {
             throw new Error(`Unexpected typed array class: ${ArrayType}.`);
         }
 
-        if ((data instanceof ArrayBuffer) || (data instanceof SharedArrayBuffer)) { // reconstruct an index from a buffer
+        if (data) { // reconstruct an index from a buffer
             this.data = data;
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
             this.coords = new this.ArrayType(this.data, HEADER_SIZE + idsByteSize + padCoords, numItems * 2);
             this._pos = numItems * 2;
             this._finished = true;
+
         } else { // initialize a new index
             this.data = new ArrayBufferType(HEADER_SIZE + coordsByteSize + idsByteSize + padCoords);
             this.ids = new this.IndexArrayType(this.data, HEADER_SIZE, numItems);
