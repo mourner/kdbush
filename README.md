@@ -68,12 +68,14 @@ Alternatively, there's a browser bundle with a `KDBush` global variable:
 
 ## API
 
-#### new KDBush(numItems[, nodeSize, ArrayType])
+#### new KDBush(numItems[, nodeSize, ArrayType, ArrayBufferType])
 
 Creates an index that will hold a given number of points (`numItems`). Additionally accepts:
 
 - `nodeSize`: Size of the KD-tree node, `64` by default. Higher means faster indexing but slower search, and vise versa.
 - `ArrayType`: Array type to use for storing coordinate values. `Float64Array` by default, but if your coordinates are integer values, `Int32Array` makes the index faster and smaller.
+- `ArrayBufferType`: the array buffer type used to store data (`ArrayBuffer` by default);
+you may prefer `SharedArrayBuffer` if you want to share the index between threads (multiple `Worker`, `SharedWorker` or `ServiceWorker`).
 
 #### index.add(x, y)
 
@@ -89,7 +91,7 @@ Finds all items within a given radius from the query point and returns an array 
 
 #### `KDBush.from(data)`
 
-Recreates a KDBush index from raw `ArrayBuffer` data
+Recreates a KDBush index from raw `ArrayBuffer` or `SharedArrayBuffer` data
 (that's exposed as `index.data` on a previously indexed KDBush instance).
 Very useful for transferring or sharing indices between threads or storing them in a file.
 
