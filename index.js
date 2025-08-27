@@ -124,9 +124,10 @@ export default class KDBush {
      * @param {number} minY
      * @param {number} maxX
      * @param {number} maxY
+     * @param {number} [maxResults] Limit the number of results to return (no limit by default).
      * @returns {number[]} An array of indices correponding to the found items.
      */
-    range(minX, minY, maxX, maxY) {
+    range(minX, minY, maxX, maxY, maxResults=Infinity) {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
         const {ids, coords, nodeSize} = this;
@@ -144,7 +145,10 @@ export default class KDBush {
                 for (let i = left; i <= right; i++) {
                     const x = coords[2 * i];
                     const y = coords[2 * i + 1];
-                    if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[i]);
+                    if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+                        result.push(ids[i]);
+                        if (result.length === maxResults) return result;
+                    };
                 }
                 continue;
             }
@@ -155,7 +159,10 @@ export default class KDBush {
             // include the middle item if it's in range
             const x = coords[2 * m];
             const y = coords[2 * m + 1];
-            if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[m]);
+            if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+                result.push(ids[m]);
+                if (result.length === maxResults) return result;
+            };
 
             // queue search in halves that intersect the query
             if (axis === 0 ? minX <= x : minY <= y) {

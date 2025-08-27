@@ -29,6 +29,13 @@ for (let i = 0; i < 10000; i++) {
 }
 console.timeEnd('10000 small bbox queries');
 
+console.time('10000 small bbox queries (with maxResults)');
+for (let i = 0; i < 10000; i++) {
+	const p = randomPoint(1000);
+	index.range(p.x - 1, p.y - 1, p.x + 1, p.y + 1, 8);
+}
+console.timeEnd('10000 small bbox queries (with maxResults)');
+
 console.time('10000 small radius queries');
 for (let i = 0; i < 10000; i++) {
     const p = randomPoint(1000);
