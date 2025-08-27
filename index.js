@@ -147,7 +147,7 @@ export default class KDBush {
                     const y = coords[2 * i + 1];
                     if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
                         result.push(ids[i]);
-                        if (result.length === maxResults) return result;
+                        if (result.length >= maxResults) return result;
                     };
                 }
                 continue;
@@ -161,7 +161,7 @@ export default class KDBush {
             const y = coords[2 * m + 1];
             if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
                 result.push(ids[m]);
-                if (result.length === maxResults) return result;
+                if (result.length >= maxResults) return result;
             };
 
             // queue search in halves that intersect the query
