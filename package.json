@@ -13,11 +13,11 @@
     "url": "git://github.com/mourner/kdbush.git"
   },
   "devDependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
-    "eslint": "^9.33.0",
+    "@rollup/plugin-terser": "^1.0.0",
+    "eslint": "^10.1.0",
     "eslint-config-mourner": "^4.1.0",
-    "rollup": "^4.46.2",
-    "typescript": "^5.9.2"
+    "rollup": "^4.60.0",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "pretest": "eslint",
