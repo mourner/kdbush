@@ -14,10 +14,10 @@
   },
   "devDependencies": {
     "@rollup/plugin-terser": "^1.0.0",
-    "eslint": "^10.1.0",
+    "eslint": "^10.4.0",
     "eslint-config-mourner": "^4.1.0",
-    "rollup": "^4.60.0",
-    "typescript": "^5.9.3"
+    "rollup": "^4.60.4",
+    "typescript": "^6.0.3"
   },
   "scripts": {
     "pretest": "eslint",
