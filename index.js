@@ -10,6 +10,10 @@ const ARRAY_TYPES = [
 const VERSION = 1; // serialized format version
 const HEADER_SIZE = 8;
 
+// Shared scratch stack for iterative DFS in range/within. Sized for the worst case:
+// 3 ints per frame * (treeHeight + 1), with treeHeight ≤ ceil(log2(2^32 / 3)) ≈ 31.
+const STACK = new Uint32Array(96);
+
 export default class KDBush {
 
     /**
@@ -130,14 +134,17 @@ export default class KDBush {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
         const {ids, coords, nodeSize} = this;
-        const stack = [0, ids.length - 1, 0];
+        STACK[0] = 0;
+        STACK[1] = ids.length - 1;
+        STACK[2] = 0;
+        let sp = 3;
         const result = [];
 
         // recursively search for items in range in the kd-sorted arrays
-        while (stack.length) {
-            const axis = stack.pop() || 0;
-            const right = stack.pop() || 0;
-            const left = stack.pop() || 0;
+        while (sp > 0) {
+            const axis = STACK[--sp];
+            const right = STACK[--sp];
+            const left = STACK[--sp];
 
             // if we reached "tree node", search linearly
             if (right - left <= nodeSize) {
@@ -159,14 +166,14 @@ export default class KDBush {
 
             // queue search in halves that intersect the query
             if (axis === 0 ? minX <= x : minY <= y) {
-                stack.push(left);
-                stack.push(m - 1);
-                stack.push(1 - axis);
+                STACK[sp++] = left;
+                STACK[sp++] = m - 1;
+                STACK[sp++] = 1 - axis;
             }
             if (axis === 0 ? maxX >= x : maxY >= y) {
-                stack.push(m + 1);
-                stack.push(right);
-                stack.push(1 - axis);
+                STACK[sp++] = m + 1;
+                STACK[sp++] = right;
+                STACK[sp++] = 1 - axis;
             }
         }
 
@@ -184,15 +191,18 @@ export default class KDBush {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
         const {ids, coords, nodeSize} = this;
-        const stack = [0, ids.length - 1, 0];
+        STACK[0] = 0;
+        STACK[1] = ids.length - 1;
+        STACK[2] = 0;
+        let sp = 3;
         const result = [];
         const r2 = r * r;
 
         // recursively search for items within radius in the kd-sorted arrays
-        while (stack.length) {
-            const axis = stack.pop() || 0;
-            const right = stack.pop() || 0;
-            const left = stack.pop() || 0;
+        while (sp > 0) {
+            const axis = STACK[--sp];
+            const right = STACK[--sp];
+            const left = STACK[--sp];
 
             // if we reached "tree node", search linearly
             if (right - left <= nodeSize) {
@@ -212,14 +222,14 @@ export default class KDBush {
 
             // queue search in halves that intersect the query
             if (axis === 0 ? qx - r <= x : qy - r <= y) {
-                stack.push(left);
-                stack.push(m - 1);
-                stack.push(1 - axis);
+                STACK[sp++] = left;
+                STACK[sp++] = m - 1;
+                STACK[sp++] = 1 - axis;
             }
             if (axis === 0 ? qx + r >= x : qy + r >= y) {
-                stack.push(m + 1);
-                stack.push(right);
-                stack.push(1 - axis);
+                STACK[sp++] = m + 1;
+                STACK[sp++] = right;
+                STACK[sp++] = 1 - axis;
             }
         }
 
