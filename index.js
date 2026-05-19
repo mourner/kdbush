@@ -188,6 +188,23 @@ export default class KDBush {
      * @returns {number[]} An array of indices correponding to the found items.
      */
     within(qx, qy, r) {
+        const result = /** @type {number[]} */ ([]);
+        this.withinInto(qx, qy, r, result);
+        return result;
+    }
+
+    /**
+     * Search the index for items within a given radius, writing matching ids into `out`
+     * via indexed assignment (`out[i] = id`). Accepts any indexed-writable container —
+     * a typed array sized to the expected upper bound (allocation-free, fast) or a plain
+     * `Array` (which will grow as needed). Returns the number of matches written.
+     * @param {number} qx
+     * @param {number} qy
+     * @param {number} r Query radius.
+     * @param {number[] | TypedArray} out Container to write matching ids into.
+     * @returns {number} The number of matches written to `out`.
+     */
+    withinInto(qx, qy, r, out) {
         if (!this._finished) throw new Error('Data not yet indexed - call index.finish().');
 
         const {ids, coords, nodeSize} = this;
@@ -195,7 +212,7 @@ export default class KDBush {
         STACK[1] = ids.length - 1;
         STACK[2] = 0;
         let sp = 3;
-        const result = [];
+        let count = 0;
         const r2 = r * r;
 
         // recursively search for items within radius in the kd-sorted arrays
@@ -207,7 +224,7 @@ export default class KDBush {
             // if we reached "tree node", search linearly
             if (right - left <= nodeSize) {
                 for (let i = left; i <= right; i++) {
-                    if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) result.push(ids[i]);
+                    if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) out[count++] = ids[i];
                 }
                 continue;
             }
@@ -218,7 +235,7 @@ export default class KDBush {
             // include the middle item if it's in range
             const x = coords[2 * m];
             const y = coords[2 * m + 1];
-            if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
+            if (sqDist(x, y, qx, qy) <= r2) out[count++] = ids[m];
 
             // queue search in halves that intersect the query
             if (axis === 0 ? qx - r <= x : qy - r <= y) {
@@ -233,7 +250,7 @@ export default class KDBush {
             }
         }
 
-        return result;
+        return count;
     }
 }
 

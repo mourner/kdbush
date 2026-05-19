@@ -87,6 +87,26 @@ test('radius search', () => {
     // outside points not in range
 });
 
+test('radius search into a typed-array buffer', () => {
+    const index = makeIndex();
+    const expected = index.within(50, 50, 20);
+
+    const out = new Uint32Array(points.length);
+    const count = index.withinInto(50, 50, 20, out);
+
+    assert.equal(count, expected.length, 'returns match count');
+    assert.deepEqual(Array.from(out.subarray(0, count)), expected, 'writes matching ids');
+    for (let i = count; i < out.length; i++) {
+        if (out[i] !== 0) assert.fail('writes beyond returned count');
+    }
+
+    // also accepts a plain Array
+    const arrOut = [];
+    const arrCount = index.withinInto(50, 50, 20, arrOut);
+    assert.equal(arrCount, expected.length);
+    assert.deepEqual(arrOut, expected);
+});
+
 test('reconstructs an index from array buffer', () => {
     const index = makeIndex();
     const index2 = KDBush.from(index.data);
