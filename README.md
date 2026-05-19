@@ -11,7 +11,7 @@ Compared to [RBush](https://github.com/mourner/rbush):
 
 If you need a static index for rectangles, not only points, see [Flatbush](https://github.com/mourner/flatbush). When indexing points, KDBush has the advantage of taking ~2x less memory than Flatbush.
 
-[![Build Status](https://github.com/mourner/kdbush/workflows/Node/badge.svg?branch=master)](https://github.com/mourner/kdbush/actions)
+[![Build Status](https://github.com/mourner/kdbush/actions/workflows/node.yml/badge.svg)](https://github.com/mourner/kdbush/actions)
 [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects)
 
 ## Usage
