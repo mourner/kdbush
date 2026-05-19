@@ -89,6 +89,10 @@ Finds all items within the given bounding box and returns an array of indices th
 
 Finds all items within a given radius from the query point and returns an array of indices.
 
+#### index.withinInto(x, y, radius, out)
+
+Like `within`, but writes matching indices into the provided `out` container via indexed assignment (`out[i] = id`) and returns the number of matches. Accepts any indexed-writable container — a typed array sized to the expected upper bound (allocation-free) or a plain `Array` (which will grow as needed).
+
 #### `KDBush.from(data)`
 
 Recreates a KDBush index from raw `ArrayBuffer` or `SharedArrayBuffer` data
