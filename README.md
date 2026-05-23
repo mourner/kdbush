@@ -81,9 +81,9 @@ you may prefer `SharedArrayBuffer` if you want to share the index between thread
 
 Adds a given point to the index. Returns a zero-based, incremental number that represents the newly added point.
 
-#### index.range(minX, minY, maxX, maxY)
+#### index.range(minX, minY, maxX, maxY, maxResults=Infinity)
 
-Finds all items within the given bounding box and returns an array of indices that refer to the order the items were added (the values returned by `index.add(x, y)`).
+Finds all items within the given bounding box and returns an array of indices that refer to the order the items were added (the values returned by `index.add(x, y)`). If set, returns at most `maxResults` results.
 
 #### index.within(x, y, radius)
 
