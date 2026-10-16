@@ -88,7 +88,7 @@ export default class KDBush {
 
             // set header
             new Uint8Array(data, 0, 2).set([0xdb, (VERSION << 4) + arrayTypeIndex]);
-            new Uint16Array(data, 2, 1)[0] = nodeSize;
+            new Uint16Array(data, 2, 1)[0] = this.nodeSize;
             new Uint32Array(data, 4, 1)[0] = numItems;
         }
     }

@@ -2,6 +2,23 @@ import KDBush from './index.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+test('round-trips clamped node sizes', () => {
+    for (const nodeSize of [16, 2, 65535, 65536, 65537, -1, 0, 1]) {
+        const index = new KDBush(4, nodeSize);
+        index.add(10, 0);
+        index.add(100, 0);
+        index.add(0, 0);
+        index.add(50, 0);
+        index.finish();
+
+        const restored = KDBush.from(index.data);
+        assert.deepEqual(restored.range(0, 0, 0, 0), index.range(0, 0, 0, 0));
+        assert.deepEqual(restored.within(0, 0, 1), [2]);
+        assert.equal(restored.nodeSize, index.nodeSize);
+        assert.deepEqual(restored.range(-1, -1, 101, 1).sort(), [0, 1, 2, 3]);
+    }
+});
+
 /* eslint @stylistic/comma-spacing: 0 */
 
 const points = [
